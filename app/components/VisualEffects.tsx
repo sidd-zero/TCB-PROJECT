@@ -36,7 +36,12 @@ export const Snowfall = () => {
     let angle = 0;
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'; // Reallly visible
+      
+      // Add a very subtle glow to each flake
+      ctx.shadowBlur = 4;
+      ctx.shadowColor = 'rgba(1, 166, 255, 0.5)'; 
+      ctx.fillStyle = 'rgba(224, 242, 254, 0.95)'; // Arctic blue tint for visibility
+      
       ctx.beginPath();
       for (let i = 0; i < count; i++) {
         const p = snowflakes[i];
@@ -44,6 +49,10 @@ export const Snowfall = () => {
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
       }
       ctx.fill();
+
+      // Reset shadow for performance
+      ctx.shadowBlur = 0;
+      
       update();
     };
 
