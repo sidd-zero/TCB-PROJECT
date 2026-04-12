@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Sidebar from './components/Sidebar';
+import { Snowfall, CursorEffect, ClickEffect } from './components/VisualEffects';
 
 export const metadata: Metadata = {
   title: 'Resume AI | Resume Analyzer',
@@ -15,6 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Snowfall />
+        <CursorEffect />
+        <ClickEffect />
         <div className="app-shell">
           <div className="app-bg" />
           <div className="app-grid">

@@ -12,6 +12,7 @@ import {
   UploadCloud,
   XCircle,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 type AnalysisResult = {
   matchScore: number;
@@ -188,7 +189,11 @@ export default function AnalyzerPage() {
             </div>
           </div>
 
-          <label className="drop-zone block">
+          <motion.label 
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className="drop-zone block"
+          >
             <input type="file" accept="application/pdf" onChange={handleFileUpload} />
             <div className="flex min-h-[14rem] flex-col items-center justify-center text-center">
               <div className="icon-tile tint-blue h-14 w-14 rounded-[20px]">
@@ -215,7 +220,7 @@ export default function AnalyzerPage() {
                 )}
               </div>
             </div>
-          </label>
+          </motion.label>
         </div>
 
         <div className={`span-7 surface-card section-card ${!resumeId ? 'opacity-60' : ''}`}>
@@ -245,7 +250,9 @@ export default function AnalyzerPage() {
                 ? 'Resume uploaded. You can run the analysis now.'
                 : 'Upload a resume first to unlock the analyzer.'}
             </div>
-            <button
+            <motion.button
+              whileHover={resumeId ? { scale: 1.04, boxShadow: "0 0 20px rgba(201, 109, 66, 0.2)" } : {}}
+              whileTap={resumeId ? { scale: 0.95 } : {}}
               onClick={handleAnalyze}
               disabled={!resumeId || !jobDescription.trim() || isAnalyzing}
               className="btn-primary"
@@ -261,7 +268,7 @@ export default function AnalyzerPage() {
                   <ChevronRight className="h-4 w-4" />
                 </>
               )}
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>

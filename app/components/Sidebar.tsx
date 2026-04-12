@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Briefcase, FileSignature, FileText, LayoutDashboard, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -18,9 +19,12 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-inner">
         <div className="sidebar-brand">
-          <div className="sidebar-brand-icon">
-            <Sparkles className="h-5 w-5" />
-          </div>
+          <motion.div 
+            whileHover={{ rotate: 15, scale: 1.1 }}
+            className="sidebar-brand-icon"
+          >
+            <Sparkles className="h-5 w-4" />
+          </motion.div>
           <div className="sidebar-brand-copy">
             <span className="sidebar-kicker">Career Studio</span>
             <span className="sidebar-brand-text">Resume AI</span>
@@ -32,27 +36,32 @@ export default function Sidebar() {
             const isActive = pathname === item.href;
 
             return (
-              <Link
+              <motion.div
                 key={item.name}
-                href={item.href}
-                className={`nav-link ${isActive ? 'active' : ''}`}
+                whileHover={{ x: 5 }}
+                whileTap={{ scale: 0.96 }}
               >
-                <span className="nav-link-icon">
-                  <item.icon className="h-[18px] w-[18px]" />
-                </span>
-                <div>
-                  <div className="text-sm font-semibold">{item.name}</div>
-                  <div className="text-xs text-[color:var(--muted)]">
-                    {item.href === '/'
-                      ? 'Overview and recent activity'
-                      : item.href === '/analyzer'
-                        ? 'Match resume to role'
-                        : item.href === '/cover-letter'
-                          ? 'Draft tailored outreach'
-                          : 'Track the pipeline'}
+                <Link
+                  href={item.href}
+                  className={`nav-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-link-icon">
+                    <item.icon className="h-[18px] w-[18px]" />
+                  </span>
+                  <div>
+                    <div className="text-sm font-semibold">{item.name}</div>
+                    <div className="text-xs text-[color:var(--muted)]">
+                      {item.href === '/'
+                        ? 'Overview and recent activity'
+                        : item.href === '/analyzer'
+                          ? 'Match resume to role'
+                          : item.href === '/cover-letter'
+                            ? 'Draft tailored outreach'
+                            : 'Track the pipeline'}
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             );
           })}
         </nav>
