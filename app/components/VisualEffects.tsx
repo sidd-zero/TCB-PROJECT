@@ -39,7 +39,7 @@ export const Snowfall = () => {
       
       // Add a very subtle glow to each flake
       ctx.shadowBlur = 4;
-      ctx.shadowColor = 'rgba(1, 166, 255, 0.5)'; 
+      ctx.shadowColor = 'rgba(79, 168, 216, 0.5)'; 
       ctx.fillStyle = 'rgba(224, 242, 254, 0.95)'; // Arctic blue tint for visibility
       
       ctx.beginPath();

@@ -35,9 +35,9 @@ export async function POST(req: Request) {
 
     let model;
     try {
-      model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     } catch {
-      model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
     }
 
     const prompt = `Write a professional and tailored cover letter based on the following job description and resume.

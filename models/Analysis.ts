@@ -6,6 +6,22 @@ export interface IAnalysis extends Document {
   matchScore: number;
   missingSkills: string[];
   suggestions: string;
+  overallMatchScore?: number;
+  report?: {
+    vibeCheck: {
+      jdStyle: string;
+      resumeTone: string;
+      vibeMatchScore: number;
+      toneAdjustmentAdvice: string;
+    };
+    gapAnalysis: {
+      missingHardSkills: string[];
+      experienceGaps: string[];
+      theHarshTruth: string;
+    };
+    actionPlan: string[];
+    overallMatchScore: number;
+  };
   createdAt: Date;
 }
 
@@ -29,6 +45,14 @@ const AnalysisSchema = new Schema<IAnalysis>({
   suggestions: {
     type: String,
     default: '',
+  },
+  overallMatchScore: {
+    type: Number,
+    required: false,
+  },
+  report: {
+    type: Schema.Types.Mixed,
+    required: false,
   },
   createdAt: {
     type: Date,

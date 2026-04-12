@@ -9,17 +9,27 @@ type AnalyzeRequestBody = {
   jobDescription?: string;
 };
 
-type AnalyzeResponsePayload = {
-  matchScore?: number;
-  missingSkills?: string[];
-  suggestions?: string;
+type DeepDiveAnalysisPayload = {
+  vibeCheck: {
+    jdStyle: string;
+    resumeTone: string;
+    vibeMatchScore: number;
+    toneAdjustmentAdvice: string;
+  };
+  gapAnalysis: {
+    missingHardSkills: string[];
+    experienceGaps: string[];
+    theHarshTruth: string;
+  };
+  actionPlan: string[];
+  overallMatchScore: number;
 };
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // Fallback logic
-function fallbackAnalysis(resumeText: string, jobDesc: string) {
+function fallbackAnalysis(resumeText: string, jobDesc: string): DeepDiveAnalysisPayload {
   const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, ' ');
   const resWords = new Set(normalize(resumeText).split(' ').filter(w => w.length > 2));
   const jobWords = normalize(jobDesc).split(' ').filter(w => w.length > 2);
@@ -34,15 +44,57 @@ function fallbackAnalysis(resumeText: string, jobDesc: string) {
     .map(i => i[0])
     .slice(0, 15);
 
-  const missingSkills = topJobKeywords.filter(w => !resWords.has(w));
-  const matchedSkills = topJobKeywords.length - missingSkills.length;
+  const missingHardSkills = topJobKeywords.filter(w => !resWords.has(w));
+  const matchedSkills = topJobKeywords.length - missingHardSkills.length;
 
-  const matchScore = Math.round((matchedSkills / topJobKeywords.length) * 100) || 10;
+  const overallMatchScore = Math.round((matchedSkills / topJobKeywords.length) * 100) || 10;
+  const vibeMatchScore = Math.max(0, Math.min(100, overallMatchScore - 5));
 
   return {
-    matchScore,
-    missingSkills,
-    suggestions: "This is a fallback analysis. Add more of the missing keywords to your resume to increase visibility.",
+    vibeCheck: {
+      jdStyle: 'General corporate (fallback inference)',
+      resumeTone: 'Neutral resume tone (fallback inference)',
+      vibeMatchScore,
+      toneAdjustmentAdvice:
+        'Use direct, results-first wording that mirrors the JD language and trims generic claims.',
+    },
+    gapAnalysis: {
+      missingHardSkills: missingHardSkills.map((skill) => `CRITICAL: ${skill}`),
+      experienceGaps: [
+        'Project scale and ownership depth are unclear from fallback parsing.',
+        'Industry context alignment is not explicit in the resume text.',
+      ],
+      theHarshTruth:
+        'A recruiter will pass if your resume does not clearly map to the JD requirements with evidence.',
+    },
+    actionPlan: [
+      'Add 2 role-relevant projects that directly prove missing skills from the JD.',
+      'Quantify outcomes in bullet points using metrics, scope, and business impact.',
+      'Rewrite summary and top bullets using the JD terminology and priority keywords.',
+    ],
+    overallMatchScore,
+  };
+}
+
+function sanitizeAndValidatePayload(payload: DeepDiveAnalysisPayload): DeepDiveAnalysisPayload {
+  return {
+    vibeCheck: {
+      jdStyle: payload?.vibeCheck?.jdStyle || '',
+      resumeTone: payload?.vibeCheck?.resumeTone || '',
+      vibeMatchScore: Math.max(0, Math.min(100, Number(payload?.vibeCheck?.vibeMatchScore) || 0)),
+      toneAdjustmentAdvice: payload?.vibeCheck?.toneAdjustmentAdvice || '',
+    },
+    gapAnalysis: {
+      missingHardSkills: Array.isArray(payload?.gapAnalysis?.missingHardSkills)
+        ? payload.gapAnalysis.missingHardSkills
+        : [],
+      experienceGaps: Array.isArray(payload?.gapAnalysis?.experienceGaps)
+        ? payload.gapAnalysis.experienceGaps
+        : [],
+      theHarshTruth: payload?.gapAnalysis?.theHarshTruth || '',
+    },
+    actionPlan: Array.isArray(payload?.actionPlan) ? payload.actionPlan : [],
+    overallMatchScore: Math.max(0, Math.min(100, Number(payload?.overallMatchScore) || 0)),
   };
 }
 
@@ -62,9 +114,7 @@ export async function POST(req: Request) {
 
     const { text: resumeText } = resume;
 
-    let matchScore = 0;
-    let missingSkills: string[] = [];
-    let suggestions = '';
+    let deepDiveAnalysis: DeepDiveAnalysisPayload;
 
     try {
       // If no Gemini key then fallback
@@ -74,25 +124,45 @@ export async function POST(req: Request) {
 
       let model;
       try {
-        model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       } catch {
-        model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       }
 
-      const prompt = `Act as an expert recruiter and ATS system.
+      const prompt = `ROLE
+You are an expert Technical Recruiter and Career Strategist known for "brutal honesty" and high-level "Culture-Fit" matching.
 
-Compare the resume with the job description and return ONLY valid JSON:
+TASK
+Analyze the Job Description and Resume and return ONLY strict valid JSON in this exact shape:
 
 {
-  "matchScore": number,
-  "missingSkills": string[],
-  "suggestions": string
+  "vibeCheck": {
+    "jdStyle": "string",
+    "resumeTone": "string",
+    "vibeMatchScore": number,
+    "toneAdjustmentAdvice": "string"
+  },
+  "gapAnalysis": {
+    "missingHardSkills": ["string"],
+    "experienceGaps": ["string"],
+    "theHarshTruth": "string"
+  },
+  "actionPlan": ["string"],
+  "overallMatchScore": number
 }
 
+CONSTRAINTS
+- No conversational filler.
+- Be direct and constructive.
+- If a missing skill is required, prefix with "CRITICAL:".
+- If a missing skill is preferred, prefix with "Preferred:".
+- Ensure numbers are between 0 and 100 where applicable.
+
+INPUTS
 Job Description:
 ${jobDescription}
 
-Resume:
+User Resume:
 ${resumeText}`;
 
       const result = await model.generateContent(prompt);
@@ -100,11 +170,8 @@ ${resumeText}`;
 
       // Strip markdown code fences if Gemini wraps its JSON in them
       const cleaned = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleaned) as AnalyzeResponsePayload;
-
-      matchScore = parsed.matchScore || 0;
-      missingSkills = parsed.missingSkills || [];
-      suggestions = parsed.suggestions || '';
+      const parsed = JSON.parse(cleaned) as DeepDiveAnalysisPayload;
+      deepDiveAnalysis = sanitizeAndValidatePayload(parsed);
 
     } catch (aiError: unknown) {
       console.warn("Gemini failed, using fallback.", aiError);
@@ -112,24 +179,28 @@ ${resumeText}`;
         console.error('ERROR: Gemini API not accessible. Check your API key and that Generative Language API is enabled.');
       }
 
-      const fallbackResult = fallbackAnalysis(resumeText, jobDescription);
-      matchScore = fallbackResult.matchScore;
-      missingSkills = fallbackResult.missingSkills;
-      suggestions = fallbackResult.suggestions;
+      deepDiveAnalysis = fallbackAnalysis(resumeText, jobDescription);
     }
+
+    const overallMatchScore = deepDiveAnalysis.overallMatchScore;
+    const missingSkills = deepDiveAnalysis.gapAnalysis.missingHardSkills;
+    const suggestions = deepDiveAnalysis.actionPlan.join(' ');
 
     // Save to DB
     const newAnalysis = await Analysis.create({
       resumeId,
       jobDescription,
-      matchScore,
+      matchScore: overallMatchScore,
       missingSkills,
       suggestions,
+      overallMatchScore,
+      report: deepDiveAnalysis,
     });
 
     return NextResponse.json({
       analysisId: newAnalysis._id,
-      matchScore,
+      ...deepDiveAnalysis,
+      matchScore: overallMatchScore,
       missingSkills,
       suggestions,
     });

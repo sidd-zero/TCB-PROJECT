@@ -8,16 +8,33 @@ import {
   ChevronRight,
   Lightbulb,
   Loader2,
+  MessageSquare,
+  Copy,
+  Check,
   Target,
   UploadCloud,
   XCircle,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type AnalysisResult = {
   matchScore: number;
   missingSkills: string[];
   suggestions: string;
+  vibeCheck?: {
+    jdStyle: string;
+    resumeTone: string;
+    vibeMatchScore: number;
+  };
+  missingHardSkills?: string[];
+};
+
+type OutreachResult = {
+  outreach: {
+    startup: { message: string; strategy: string };
+    corporate: { message: string; strategy: string };
+    technical: { message: string; strategy: string };
+  };
 };
 
 export default function AnalyzerPage() {
@@ -27,6 +44,9 @@ export default function AnalyzerPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [outreachResults, setOutreachResults] = useState<OutreachResult | null>(null);
+  const [isGeneratingOutreach, setIsGeneratingOutreach] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,6 +109,41 @@ export default function AnalyzerPage() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleOutreach = async () => {
+    if (!results) return;
+
+    setIsGeneratingOutreach(true);
+    setOutreachResults(null);
+
+    const vibe = results.vibeCheck?.jdStyle || 'General Corporate';
+    const strength = results.suggestions.split('.')[0] || 'Strong professional background';
+    const role = 'Target Role';
+
+    try {
+      const res = await fetch('/api/outreach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vibe, strength, role }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setOutreachResults(data);
+      } else {
+        setError(data.error || 'Failed to generate outreach');
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error generating outreach');
+    } finally {
+      setIsGeneratingOutreach(false);
+    }
+  };
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const score = results?.matchScore ?? 0;
@@ -341,6 +396,96 @@ export default function AnalyzerPage() {
               <div className="empty-state min-h-[8rem]">
                 <CheckCircle2 className="h-6 w-6 text-[color:var(--accent-2)]" />
                 <p className="text-sm">No missing skills were identified for this job description.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="span-12 surface-card section-card overflow-hidden">
+            <div className="section-header">
+              <div>
+                <div className="section-title">Networking Outreach</div>
+                <p className="section-copy">Persona-based LinkedIn connection requests.</p>
+              </div>
+              <div className="icon-tile tint-blue">
+                <MessageSquare className="h-5 w-5" />
+              </div>
+            </div>
+
+            {!outreachResults ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-[color:var(--line)] rounded-[24px] bg-slate-50/50">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-[color:var(--line)] flex items-center justify-center mb-4 text-slate-400">
+                  <MessageSquare size={24} />
+                </div>
+                <h4 className="font-bold text-slate-900 mb-2">Ready to connect?</h4>
+                <p className="text-sm text-slate-500 mb-6 max-w-sm">
+                  Generate tailored LinkedIn messages based on your analysis to get closer to the hiring team.
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleOutreach}
+                  disabled={isGeneratingOutreach}
+                  className="btn-primary flex items-center gap-2"
+                >
+                  {isGeneratingOutreach ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Crafting messages...
+                    </>
+                  ) : (
+                    <>
+                      Generate Outreach
+                      <ChevronRight size={18} />
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {(['startup', 'corporate', 'technical'] as const).map((vibe) => {
+                  const data = outreachResults.outreach[vibe];
+                  const isCopied = copiedId === vibe;
+
+                  return (
+                    <motion.div
+                      key={vibe}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="surface-panel p-6 flex flex-col h-full bg-white/40 group hover:bg-white transition-all cursor-default"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          {vibe} vibe
+                        </div>
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => copyToClipboard(data.message, vibe)}
+                          className={`p-2 rounded-xl transition-all ${
+                            isCopied 
+                              ? 'bg-green-100 text-green-600' 
+                              : 'bg-slate-100 text-slate-400 hover:text-orange-600 hover:bg-orange-50'
+                          }`}
+                        >
+                          {isCopied ? <Check size={16} /> : <Copy size={16} />}
+                        </motion.button>
+                      </div>
+                      
+                      <div className="flex-1 text-sm leading-7 text-slate-800 font-medium mb-6">
+                        "{data.message}"
+                        <div className="text-[10px] mt-2 text-slate-400 font-normal">
+                          {data.message.length} / 300 characters
+                        </div>
+                      </div>
+
+                      <div className="mt-auto pt-4 border-t border-slate-100/50">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">Strategy</div>
+                        <div className="text-[11px] text-slate-500 font-semibold italic">
+                          {data.strategy}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             )}
           </div>
