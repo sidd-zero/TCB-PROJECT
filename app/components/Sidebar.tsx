@@ -7,7 +7,8 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'ATS Scanner', href: '/ats-scanner', icon: Sparkles },
   { name: 'Analyzer', href: '/analyzer', icon: FileText },
   { name: 'Cover Letters', href: '/cover-letter', icon: FileSignature },
   { name: 'Tracker', href: '/applications', icon: Briefcase },
@@ -66,8 +67,10 @@ export default function Sidebar() {
                   <div>
                     <div className="text-sm font-semibold">{item.name}</div>
                     <div className="text-xs text-[color:var(--muted)] line-clamp-1">
-                      {item.href === '/'
+                      {item.href === '/dashboard'
                         ? 'Overview and recent activity'
+                        : item.href === '/ats-scanner'
+                          ? 'Check machine readability'
                         : item.href === '/analyzer'
                           ? 'Match resume to role'
                           : item.href === '/cover-letter'

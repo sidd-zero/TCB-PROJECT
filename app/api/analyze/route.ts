@@ -10,19 +10,21 @@ type AnalyzeRequestBody = {
 };
 
 type DeepDiveAnalysisPayload = {
-  vibeCheck: {
-    jdStyle: string;
-    resumeTone: string;
-    vibeMatchScore: number;
-    toneAdjustmentAdvice: string;
+  atsScore: {
+    score: number;
+    foundKeywords: string[];
+    missingKeywords: string[];
+    parsingWarnings: string[];
+    scoreJustification: string;
   };
-  gapAnalysis: {
-    missingHardSkills: string[];
-    experienceGaps: string[];
-    theHarshTruth: string;
+  analyzerScore: {
+    score: number;
+    vibeMatch: string;
+    impactRating: string;
+    cultureFitSuggestions: string;
+    scoreJustification: string;
   };
-  actionPlan: string[];
-  overallMatchScore: number;
+  overallShortlistProbability: 'High' | 'Medium' | 'Low';
 };
 
 // Initialize Gemini
@@ -44,57 +46,47 @@ function fallbackAnalysis(resumeText: string, jobDesc: string): DeepDiveAnalysis
     .map(i => i[0])
     .slice(0, 15);
 
-  const missingHardSkills = topJobKeywords.filter(w => !resWords.has(w));
-  const matchedSkills = topJobKeywords.length - missingHardSkills.length;
-
-  const overallMatchScore = Math.round((matchedSkills / topJobKeywords.length) * 100) || 10;
-  const vibeMatchScore = Math.max(0, Math.min(100, overallMatchScore - 5));
+  const foundKeywords = topJobKeywords.filter(w => resWords.has(w));
+  const missingKeywords = topJobKeywords.filter(w => !resWords.has(w));
+  
+  const ats_score = Math.round((foundKeywords.length / topJobKeywords.length) * 100) || 10;
 
   return {
-    vibeCheck: {
-      jdStyle: 'General corporate (fallback inference)',
-      resumeTone: 'Neutral resume tone (fallback inference)',
-      vibeMatchScore,
-      toneAdjustmentAdvice:
-        'Use direct, results-first wording that mirrors the JD language and trims generic claims.',
+    atsScore: {
+      score: ats_score,
+      foundKeywords,
+      missingKeywords,
+      parsingWarnings: ["Fallback mode: Visual structure not fully parsed."],
+      scoreJustification: "Brutally honest: Your keyword density is low. You are likely being filtered out because your language doesn't mirror the JD expectations.",
     },
-    gapAnalysis: {
-      missingHardSkills: missingHardSkills.map((skill) => `CRITICAL: ${skill}`),
-      experienceGaps: [
-        'Project scale and ownership depth are unclear from fallback parsing.',
-        'Industry context alignment is not explicit in the resume text.',
-      ],
-      theHarshTruth:
-        'A recruiter will pass if your resume does not clearly map to the JD requirements with evidence.',
+    analyzerScore: {
+      score: Math.max(0, ats_score - 10),
+      vibeMatch: "Neutral/Corporate",
+      impactRating: "Low: Data points are missing.",
+      cultureFitSuggestions: "Adopt more active, results-oriented language used in modern tech environments.",
+      scoreJustification: "Your bullet points focus on tasks, not outcomes. Recruiters want to see how you moved the needle, not just what was on your calendar.",
     },
-    actionPlan: [
-      'Add 2 role-relevant projects that directly prove missing skills from the JD.',
-      'Quantify outcomes in bullet points using metrics, scope, and business impact.',
-      'Rewrite summary and top bullets using the JD terminology and priority keywords.',
-    ],
-    overallMatchScore,
+    overallShortlistProbability: ats_score > 70 ? 'High' : ats_score > 40 ? 'Medium' : 'Low',
   };
 }
 
-function sanitizeAndValidatePayload(payload: DeepDiveAnalysisPayload): DeepDiveAnalysisPayload {
+function sanitizeAndValidatePayload(payload: any): DeepDiveAnalysisPayload {
   return {
-    vibeCheck: {
-      jdStyle: payload?.vibeCheck?.jdStyle || '',
-      resumeTone: payload?.vibeCheck?.resumeTone || '',
-      vibeMatchScore: Math.max(0, Math.min(100, Number(payload?.vibeCheck?.vibeMatchScore) || 0)),
-      toneAdjustmentAdvice: payload?.vibeCheck?.toneAdjustmentAdvice || '',
+    atsScore: {
+      score: Math.max(0, Math.min(100, Number(payload?.atsScore?.score) || 0)),
+      foundKeywords: Array.isArray(payload?.atsScore?.foundKeywords) ? payload.atsScore.foundKeywords : [],
+      missingKeywords: Array.isArray(payload?.atsScore?.missingKeywords) ? payload.atsScore.missingKeywords : [],
+      parsingWarnings: Array.isArray(payload?.atsScore?.parsingWarnings) ? payload.atsScore.parsingWarnings : [],
+      scoreJustification: payload?.atsScore?.scoreJustification || 'No justification provided.',
     },
-    gapAnalysis: {
-      missingHardSkills: Array.isArray(payload?.gapAnalysis?.missingHardSkills)
-        ? payload.gapAnalysis.missingHardSkills
-        : [],
-      experienceGaps: Array.isArray(payload?.gapAnalysis?.experienceGaps)
-        ? payload.gapAnalysis.experienceGaps
-        : [],
-      theHarshTruth: payload?.gapAnalysis?.theHarshTruth || '',
+    analyzerScore: {
+      score: Math.max(0, Math.min(100, Number(payload?.analyzerScore?.score) || 0)),
+      vibeMatch: payload?.analyzerScore?.vibeMatch || 'N/A',
+      impactRating: payload?.analyzerScore?.impactRating || 'N/A',
+      cultureFitSuggestions: payload?.analyzerScore?.cultureFitSuggestions || 'N/A',
+      scoreJustification: payload?.analyzerScore?.scoreJustification || 'No recruiter feedback provided.',
     },
-    actionPlan: Array.isArray(payload?.actionPlan) ? payload.actionPlan : [],
-    overallMatchScore: Math.max(0, Math.min(100, Number(payload?.overallMatchScore) || 0)),
+    overallShortlistProbability: payload?.overallShortlistProbability || 'Low',
   };
 }
 
@@ -117,7 +109,6 @@ export async function POST(req: Request) {
     let deepDiveAnalysis: DeepDiveAnalysisPayload;
 
     try {
-      // If no Gemini key then fallback
       if (!process.env.GEMINI_API_KEY) {
         throw new Error('Gemini API Key missing');
       }
@@ -129,62 +120,71 @@ export async function POST(req: Request) {
         model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       }
 
-      const prompt = `ROLE
-You are an expert Technical Recruiter and Career Strategist known for "brutal honesty" and high-level "Culture-Fit" matching.
+      const prompt = `### ROLE
+You are a dual-mode AI System: 
+1. An ATS (Applicant Tracking System) Parser.
+2. A Senior Executive Recruiter.
 
-TASK
-Analyze the Job Description and Resume and return ONLY strict valid JSON in this exact shape:
+### TASK
+Analyze the provided Job Description (JD) and Resume. You must return TWO distinct scores and a detailed breakdown in a single JSON object.
 
-{
-  "vibeCheck": {
-    "jdStyle": "string",
-    "resumeTone": "string",
-    "vibeMatchScore": number,
-    "toneAdjustmentAdvice": "string"
-  },
-  "gapAnalysis": {
-    "missingHardSkills": ["string"],
-    "experienceGaps": ["string"],
-    "theHarshTruth": "string"
-  },
-  "actionPlan": ["string"],
-  "overallMatchScore": number
-}
-
-CONSTRAINTS
-- No conversational filler.
-- Be direct and constructive.
-- If a missing skill is required, prefix with "CRITICAL:".
-- If a missing skill is preferred, prefix with "Preferred:".
-- Ensure numbers are between 0 and 100 where applicable.
-
-INPUTS
-Job Description:
+### INPUTS
+- Job Description:
 ${jobDescription}
 
-User Resume:
-${resumeText}`;
+- Resume:
+${resumeText}
+
+### CRITERIA
+1. ATS COMPATIBILITY SCORE (0-100):
+   - Keyword Density: How many hard skills from the JD are present?
+   - Formatting Check: Are there complex tables/images that might break a parser?
+   - Section Headings: Are standard headings used (Experience, Education, etc.)?
+
+2. STRATEGIC ANALYZER SCORE (0-100):
+   - Vibe/Tone Match: Does the language match the company culture?
+   - Impact Assessment: Are bullet points result-oriented (numbers/metrics)?
+   - Seniority Alignment: Does the experience level match the JD requirements?
+
+### OUTPUT FORMAT (STRICT JSON)
+{
+  "atsScore": {
+    "score": number,
+    "foundKeywords": ["string"],
+    "missingKeywords": ["string"],
+    "parsingWarnings": ["string"],
+    "scoreJustification": "string"
+  },
+  "analyzerScore": {
+    "score": number,
+    "vibeMatch": "string",
+    "impactRating": "string",
+    "cultureFitSuggestions": "string",
+    "scoreJustification": "string"
+  },
+  "overallShortlistProbability": "High/Medium/Low"
+}
+
+### CONSTRAINTS
+- Be precise. If a keyword is missing, list it.
+- The 'scoreJustification' must be direct and 'brutally honest.'
+- No conversational filler, output ONLY the JSON.`;
 
       const result = await model.generateContent(prompt);
       const text = result.response.text();
 
-      // Strip markdown code fences if Gemini wraps its JSON in them
       const cleaned = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleaned) as DeepDiveAnalysisPayload;
+      const parsed = JSON.parse(cleaned);
       deepDiveAnalysis = sanitizeAndValidatePayload(parsed);
 
     } catch (aiError: unknown) {
       console.warn("Gemini failed, using fallback.", aiError);
-      if (aiError instanceof Error && aiError.message.includes('404')) {
-        console.error('ERROR: Gemini API not accessible. Check your API key and that Generative Language API is enabled.');
-      }
-
       deepDiveAnalysis = fallbackAnalysis(resumeText, jobDescription);
     }
 
-    const overallMatchScore = deepDiveAnalysis.overallMatchScore;
-    const missingSkills = deepDiveAnalysis.gapAnalysis.missingHardSkills;
-    const suggestions = deepDiveAnalysis.actionPlan.join(' ');
+    const overallMatchScore = Math.round((deepDiveAnalysis.atsScore.score + deepDiveAnalysis.analyzerScore.score) / 2);
+    const missingSkills = deepDiveAnalysis.atsScore.missingKeywords;
+    const suggestions = deepDiveAnalysis.analyzerScore.cultureFitSuggestions;
 
     // Save to DB
     const newAnalysis = await Analysis.create({

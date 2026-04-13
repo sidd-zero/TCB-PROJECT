@@ -18,15 +18,23 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 type AnalysisResult = {
-  matchScore: number;
-  missingSkills: string[];
-  suggestions: string;
-  vibeCheck?: {
-    jdStyle: string;
-    resumeTone: string;
-    vibeMatchScore: number;
+  atsScore: {
+    score: number;
+    foundKeywords: string[];
+    missingKeywords: string[];
+    parsingWarnings: string[];
+    scoreJustification: string;
   };
-  missingHardSkills?: string[];
+  analyzerScore: {
+    score: number;
+    vibeMatch: string;
+    impactRating: string;
+    cultureFitSuggestions: string;
+    scoreJustification: string;
+  };
+  overallShortlistProbability: 'High' | 'Medium' | 'Low';
+  matchScore: number; // For average/legacy support
+  suggestions: string; // Map from cultureFitSuggestions
 };
 
 type OutreachResult = {
@@ -117,8 +125,8 @@ export default function AnalyzerPage() {
     setIsGeneratingOutreach(true);
     setOutreachResults(null);
 
-    const vibe = results.vibeCheck?.jdStyle || 'General Corporate';
-    const strength = results.suggestions.split('.')[0] || 'Strong professional background';
+    const vibe = results.analyzerScore.vibeMatch || 'General Corporate';
+    const strength = results.analyzerScore.impactRating || 'Strong professional background';
     const role = 'Target Role';
 
     try {
@@ -330,74 +338,98 @@ export default function AnalyzerPage() {
 
       {results && (
         <section className="bento-grid">
-          <div className="span-4 surface-panel section-card">
+          {/* Recruiter Strategy Score */}
+          <div className="span-4 surface-panel section-card flex flex-col justify-between">
             <div className="section-header">
               <div>
-                <div className="section-title">Match score</div>
-                <p className="section-copy">A quick signal for role alignment.</p>
+                <div className="section-title">Recruiter Strategy</div>
+                <p className="section-copy">Human-level assessment of your profile.</p>
               </div>
               <div className="icon-tile tint-green">
                 <Target className="h-5 w-5" />
               </div>
             </div>
 
-            <div className={`text-6xl font-black tracking-[-0.08em] ${scoreTone}`}>
-              {score}%
+            <div className="flex flex-col items-center justify-center py-6">
+              <div className={`text-7xl font-black tracking-[-0.08em] ${
+                results.analyzerScore.score >= 70 ? 'text-[color:var(--accent-2)]' : 
+                results.analyzerScore.score >= 40 ? 'text-[color:var(--accent)]' : 
+                'text-[color:var(--danger)]'
+              }`}>
+                {results.analyzerScore.score}%
+              </div>
+              <div className="mt-4 px-4 py-1.5 rounded-full bg-slate-100 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                Strategic Alignment
+              </div>
             </div>
-            <div className="mt-6 h-3 overflow-hidden rounded-full bg-black/8">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${score}%`,
-                  backgroundColor: `color-mix(in srgb, ${meterTone} 88%, white)`,
-                }}
-              />
+
+            <div className="mt-auto space-y-4">
+               <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${results.analyzerScore.score}%` }}
+                    className="h-full bg-[color:var(--accent-2)]" 
+                  />
+               </div>
+               <div className="flex justify-between items-center text-xs font-bold text-slate-400">
+                  <span>Probability</span>
+                  <span className={`px-2 py-0.5 rounded border ${
+                    results.overallShortlistProbability === 'High' ? 'text-emerald-600 border-emerald-100 bg-emerald-50' :
+                    results.overallShortlistProbability === 'Medium' ? 'text-amber-600 border-amber-100 bg-amber-50' :
+                    'text-rose-600 border-rose-100 bg-rose-50'
+                  }`}>
+                    {results.overallShortlistProbability} Shortlist
+                  </span>
+               </div>
             </div>
           </div>
 
-          <div className="span-8 surface-card section-card">
+          {/* Brutal Truth Card */}
+          <div className="span-8 surface-card section-card bg-[color:var(--surface-strong)] border-[color:var(--line-strong)]">
             <div className="section-header">
               <div>
-                <div className="section-title">Suggestions</div>
-                <p className="section-copy">Plain-language notes generated from the comparison.</p>
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="px-2 py-0.5 rounded bg-rose-100 text-rose-700 text-[10px] font-black uppercase tracking-widest mb-2 inline-block"
+                >
+                  Strict Protocol: Brutally Honest
+                </motion.div>
+                <div className="section-title">The Strategic Justification</div>
+                <p className="section-copy">Why you are receiving this specific expert rating.</p>
               </div>
               <div className="icon-tile tint-warm">
-                <Lightbulb className="h-5 w-5" />
+                <MessageSquare className="h-5 w-5" />
               </div>
             </div>
-            <div className="rounded-[20px] border border-[color:var(--line)] bg-white/50 px-4 py-4 text-sm leading-7 text-[color:var(--muted-strong)]">
-              {results.suggestions}
+            <div className="mt-2 text-lg leading-9 text-[color:var(--text)] font-semibold tracking-tight p-6 rounded-3xl bg-slate-50/50 border border-slate-100">
+              "{results.analyzerScore.scoreJustification}"
+            </div>
+            <div className="mt-6 flex flex-wrap gap-4">
+               <div className="flex-1 p-4 rounded-2xl bg-white border border-slate-100">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Impact Rating</div>
+                  <div className="font-bold text-slate-700">{results.analyzerScore.impactRating}</div>
+               </div>
+               <div className="flex-1 p-4 rounded-2xl bg-white border border-slate-100">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Vibe Match</div>
+                  <div className="font-bold text-slate-700">{results.analyzerScore.vibeMatch}</div>
+               </div>
             </div>
           </div>
 
           <div className="span-12 surface-card section-card">
             <div className="section-header">
               <div>
-                <div className="section-title">Missing skills</div>
-                <p className="section-copy">Terms or capabilities the analysis did not find clearly.</p>
+                <div className="section-title">Culture Fit & Optimization</div>
+                <p className="section-copy">Expert suggestions to pivot your language for this specific company culture.</p>
               </div>
-              <div className="icon-tile tint-blue">
-                <XCircle className="h-5 w-5" />
+              <div className="icon-tile tint-warm">
+                <Lightbulb className="h-5 w-5" />
               </div>
             </div>
-
-            {results.missingSkills?.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {results.missingSkills.map((skill: string, idx: number) => (
-                  <span
-                    key={idx}
-                    className="rounded-full border border-[rgba(180,83,60,0.18)] bg-[rgba(180,83,60,0.08)] px-3 py-2 text-sm font-medium text-[color:var(--danger)]"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state min-h-[8rem]">
-                <CheckCircle2 className="h-6 w-6 text-[color:var(--accent-2)]" />
-                <p className="text-sm">No missing skills were identified for this job description.</p>
-              </div>
-            )}
+            <div className="rounded-[24px] border border-[color:var(--line)] bg-slate-50/30 px-6 py-6 text-base leading-8 text-[color:var(--text)] font-medium">
+              {results.analyzerScore.cultureFitSuggestions}
+            </div>
           </div>
 
           <div className="span-12 surface-card section-card overflow-hidden">
@@ -412,13 +444,13 @@ export default function AnalyzerPage() {
             </div>
 
             {!outreachResults ? (
-              <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-[color:var(--line)] rounded-[24px] bg-slate-50/50">
+              <div className="empty-state min-h-[12rem] bg-slate-50/50">
                 <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-[color:var(--line)] flex items-center justify-center mb-4 text-slate-400">
                   <MessageSquare size={24} />
                 </div>
                 <h4 className="font-bold text-slate-900 mb-2">Ready to connect?</h4>
                 <p className="text-sm text-slate-500 mb-6 max-w-sm">
-                  Generate tailored LinkedIn messages based on your analysis to get closer to the hiring team.
+                  Generate tailored LinkedIn messages based on the Recruiter's assessment.
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -451,7 +483,7 @@ export default function AnalyzerPage() {
                       key={vibe}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="surface-panel p-6 flex flex-col h-full bg-white/40 group hover:bg-white transition-all cursor-default"
+                      className="surface-panel p-6 flex flex-col h-full bg-white group hover:bg-slate-50 transition-all cursor-default"
                     >
                       <div className="flex items-center justify-between mb-4">
                         <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">

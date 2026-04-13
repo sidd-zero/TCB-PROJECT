@@ -29,53 +29,156 @@ const SubmitButton = ({ label, loading }: { label: string; loading?: boolean }) 
 
 // --- Section Components ---
 
-export function AccountForm() {
+import { toast } from 'sonner';
+import { updateProfile, changePassword, deleteAccount as deleteAccountAction } from '@/app/actions/profile';
+
+// --- Section Components ---
+
+export function AccountForm({ initialData }: { initialData?: AccountValues }) {
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<AccountValues>({
     resolver: zodResolver(accountSchema),
-    defaultValues: { name: 'John Doe', email: 'john@example.com' },
+    defaultValues: initialData || { 
+      name: '', 
+      email: '', 
+      bio: '', 
+      avatarUrl: '', 
+      portfolioUrl: '', 
+      linkedinUrl: '', 
+      githubUrl: '',
+      leetcodeUrl: '',
+      gender: 'Prefer not to say',
+      dob: '',
+      phoneNumber: ''
+    },
   });
 
-  const onSubmit = (data: AccountValues) => {
-    console.log('Account Data:', data);
-    alert('Profile updated successfully!');
+  const onSubmit = async (data: AccountValues) => {
+    setLoading(true);
+    const result = await updateProfile(data);
+    setLoading(false);
+    
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   };
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <FormHeader title="Account Information" description="Update your personal details and profile picture." />
+      <FormHeader title="Account Information" description="Update your professional narrative and digital presence." />
       
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex items-center gap-6 mb-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <div className="flex items-center gap-6 mb-8 p-6 surface-panel rounded-[32px] border border-white/20">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-3xl bg-slate-100 border-2 border-slate-200 overflow-hidden flex items-center justify-center">
-              <User className="text-slate-300 h-10 w-10" />
+            <div className="w-24 h-24 rounded-3xl bg-white shadow-xl border-2 border-white/50 overflow-hidden flex items-center justify-center">
+              <User className="text-slate-200 h-10 w-10" />
             </div>
             <button type="button" className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-lg border border-slate-100 text-orange-600 hover:text-orange-700 transition-colors">
               <Camera size={18} />
             </button>
           </div>
           <div>
-            <h4 className="font-semibold text-slate-800">Profile Picture</h4>
-            <p className="text-xs text-slate-500 mt-1">PNG, JPG up to 5MB</p>
+            <h4 className="font-bold text-slate-800">Identity Image</h4>
+            <p className="text-xs text-slate-500 mt-1">Paste a URL or upload a fresh avatar.</p>
+            <input 
+              {...register('avatarUrl')} 
+              placeholder="https://images..." 
+              className="mt-2 text-xs w-full bg-transparent border-b border-slate-200 py-1 focus:border-orange-500 outline-none" 
+            />
+            {errors.avatarUrl && <p className="text-[10px] text-rose-500 mt-1">{errors.avatarUrl.message}</p>}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">Full Name</label>
-            <input {...register('name')} className="input-field" placeholder="Your name" />
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Name</label>
+            <input {...register('name')} className="input-field" placeholder="John Doe" />
             {errors.name && <p className="text-xs text-rose-500 ml-1">{errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">Email Address</label>
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Email Protocol</label>
             <input {...register('email')} disabled className="input-field opacity-60 cursor-not-allowed" />
-            <p className="text-[10px] text-slate-400 ml-1">Email cannot be changed manually.</p>
+            <p className="text-[10px] text-slate-400 ml-1 italic">Read-only system identifier.</p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Gender Identifier</label>
+            <select {...register('gender')} className="input-field appearance-none bg-white">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Non-binary">Non-binary</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Date of Birth</label>
+            <input type="date" {...register('dob')} className="input-field" />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Phone Protocol</label>
+            <input {...register('phoneNumber')} className="input-field" placeholder="+1 (555) 000-0000" />
+            {errors.phoneNumber && <p className="text-xs text-rose-500 ml-1">{errors.phoneNumber.message}</p>}
+          </div>
+
+          <div className="sm:col-span-2 space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Professional Narrative (Bio)</label>
+            <textarea 
+              {...register('bio')} 
+              className="textarea-field min-h-[100px] py-4" 
+              placeholder="Tell us about your career focus and what moves you..." 
+            />
+            {errors.bio && <p className="text-xs text-rose-500 ml-1">{errors.bio.message}</p>}
           </div>
         </div>
 
-        <div className="pt-4">
-          <SubmitButton label="Save Changes" />
+        <div className="divider" />
+
+        <div className="space-y-6">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Digital Portfolio & Social Presence</div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 flex items-center gap-2">
+                <Download size={14} className="rotate-180" /> Portfolio
+              </label>
+              <input {...register('portfolioUrl')} className="input-field text-sm" placeholder="https://..." />
+              {errors.portfolioUrl && <p className="text-[10px] text-rose-500">{errors.portfolioUrl.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 flex items-center gap-2">
+                <User size={14} /> LinkedIn
+              </label>
+              <input {...register('linkedinUrl')} className="input-field text-sm" placeholder="https://linkedin.com/in/..." />
+              {errors.linkedinUrl && <p className="text-[10px] text-rose-500">{errors.linkedinUrl.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 flex items-center gap-2">
+                <Trash2 size={14} className="rotate-180" /> GitHub
+              </label>
+              <input {...register('githubUrl')} className="input-field text-sm" placeholder="https://github.com/..." />
+              {errors.githubUrl && <p className="text-[10px] text-rose-500">{errors.githubUrl.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600 flex items-center gap-2">
+                <Download size={14} /> LeetCode
+              </label>
+              <input {...register('leetcodeUrl')} className="input-field text-sm" placeholder="https://leetcode.com/u/..." />
+              {errors.leetcodeUrl && <p className="text-[10px] text-rose-500">{errors.leetcodeUrl.message}</p>}
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-8">
+          <SubmitButton label="Synchronize Profile" loading={loading} />
         </div>
       </form>
     </motion.div>
@@ -83,19 +186,38 @@ export function AccountForm() {
 }
 
 export function SecurityForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm<SecurityValues>({
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<SecurityValues>({
     resolver: zodResolver(securitySchema),
   });
   const [showModal, setShowModal] = useState(false);
 
-  const onSubmit = (data: SecurityValues) => {
-    console.log('Security Data:', data);
-    alert('Password updated successfully!');
+  const onSubmit = async (data: SecurityValues) => {
+    setLoading(true);
+    const result = await changePassword(data);
+    setLoading(false);
+    
+    if (result.success) {
+      toast.success(result.message);
+      reset();
+    } else {
+      toast.error(result.message);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const result = await deleteAccountAction();
+    if (result.success) {
+      toast.success('Account deleted. Redirecting...');
+      window.location.href = '/login';
+    } else {
+      toast.error(result.message);
+    }
   };
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <FormHeader title="Security" description="Manage your password and platform security." />
+      <FormHeader title="Security & Authentication" description="Rotate your credentials and manage account lifecycle." />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-2">
@@ -106,38 +228,38 @@ export function SecurityForm() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">New Password</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">New Secure Password</label>
             <input type="password" {...register('newPassword')} className="input-field" placeholder="••••••••" />
             {errors.newPassword && <p className="text-xs text-rose-500 ml-1">{errors.newPassword.message}</p>}
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">Confirm New Password</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">Confirm Protocol</label>
             <input type="password" {...register('confirmPassword')} className="input-field" placeholder="••••••••" />
             {errors.confirmPassword && <p className="text-xs text-rose-500 ml-1">{errors.confirmPassword.message}</p>}
           </div>
         </div>
 
         <div className="pt-4">
-          <SubmitButton label="Update Password" />
+          <SubmitButton label="Update Encryption" loading={loading} />
         </div>
       </form>
 
       <div className="mt-12 pt-8 border-t border-slate-100">
         <div className="flex items-center gap-2 text-rose-600 mb-4">
-          <Trash2 size={20} />
-          <h3 className="font-bold text-lg">Danger Zone</h3>
+          <AlertTriangle size={20} />
+          <h3 className="font-bold text-lg tracking-tight">System Danger Zone</h3>
         </div>
-        <div className="surface-soft p-6 border-rose-100 border bg-rose-50/30">
-          <p className="text-sm text-slate-600 mb-4">
-            Once you delete your account, there is no going back. Please be certain.
+        <div className="surface-soft p-8 border-rose-100 border bg-rose-50/20 rounded-[32px]">
+          <p className="text-sm text-slate-600 mb-6 font-medium leading-relaxed">
+            Permanent account destruction. All resume data, analysis history, and active session tokens will be purged. This action is irreversible.
           </p>
           <button 
             type="button" 
             onClick={() => setShowModal(true)}
-            className="px-6 py-3 bg-rose-600 text-white rounded-2xl font-bold text-sm hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200"
+            className="px-8 py-3.5 bg-rose-600 text-white rounded-2xl font-bold text-sm hover:bg-rose-700 transition-all shadow-lg shadow-rose-200"
           >
-            Delete My Account
+            Initiate Deletion
           </button>
         </div>
       </div>

@@ -2,26 +2,50 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/lib/auth';
 
 // Add paths that should be accessible without authentication
-const publicPaths = ['/login', '/api/auth/login'];
+const publicPaths = ['/', '/login', '/api/auth/login'];
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isPublicPath = publicPaths.some(p => path === p || path.startsWith('/api/auth/'));
+  
+  // Skip logic for static assets and public files
+  if (path.startsWith('/_next') || path.includes('.')) {
+    return NextResponse.next();
+  }
 
-  const session = req.cookies.get('session')?.value;
+  const isPublicPath = publicPaths.some(p => path === p || path.startsWith('/api/auth/'));
+  const sessionToken = req.cookies.get('session')?.value;
 
   // 1. If trying to access a protected path without a session, redirect to login
-  if (!isPublicPath && !session) {
+  if (!isPublicPath && !sessionToken) {
     return NextResponse.redirect(new URL('/login', req.nextUrl));
   }
 
-  // 2. If trying to access login while already authenticated, redirect to dashboard
-  if (path === '/login' && session) {
+  // 2. Auth checks
+  if (sessionToken) {
     try {
-      await decrypt(session);
-      return NextResponse.redirect(new URL('/', req.nextUrl));
+      const payload = await decrypt(sessionToken);
+      
+      // If already authenticated and trying to access login or landing, redirect to dashboard
+      if (path === '/login' || path === '/') {
+        return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
+      }
+
+      // ONBOARDING REDIRECT LOGIC
+      // If not onboarded and not on the onboarding page, redirect to it
+      // ONLY if it's not a public path or an API route
+      if (!payload.isOnboarded && path !== '/onboarding' && !isPublicPath && !path.startsWith('/api/')) {
+        return NextResponse.redirect(new URL('/onboarding', req.nextUrl));
+      }
+
+      // If already onboarded and trying to access the onboarding page, redirect home
+      if (payload.isOnboarded && path === '/onboarding') {
+        return NextResponse.redirect(new URL('/', req.nextUrl));
+      }
     } catch (err) {
-      // Session invalid, let user stay on login
+      // Session invalid fallback
+      if (!isPublicPath) {
+        return NextResponse.redirect(new URL('/login', req.nextUrl));
+      }
     }
   }
 

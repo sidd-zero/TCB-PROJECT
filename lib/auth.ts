@@ -16,7 +16,10 @@ export async function decrypt(input: string): Promise<any> {
   const { payload } = await jwtVerify(input, key, {
     algorithms: ['HS256'],
   });
-  return payload;
+  return {
+    ...payload,
+    isOnboarded: !!payload.isOnboarded
+  };
 }
 
 export async function getSession() {
@@ -27,4 +30,23 @@ export async function getSession() {
   } catch (err) {
     return null;
   }
+}
+
+export async function updateSession(newPayload: any) {
+  const session = (await cookies()).get('session')?.value;
+  if (!session) return;
+  
+  const payload = await decrypt(session);
+  const updatedPayload = { ...payload, ...newPayload };
+  
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  const newSession = await encrypt(updatedPayload);
+  
+  (await cookies()).set('session', newSession, { 
+    expires, 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/' 
+  });
 }

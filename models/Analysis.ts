@@ -8,19 +8,21 @@ export interface IAnalysis extends Document {
   suggestions: string;
   overallMatchScore?: number;
   report?: {
-    vibeCheck: {
-      jdStyle: string;
-      resumeTone: string;
-      vibeMatchScore: number;
-      toneAdjustmentAdvice: string;
+    atsScore: {
+      score: number;
+      foundKeywords: string[];
+      missingKeywords: string[];
+      parsingWarnings: string[];
+      scoreJustification: string;
     };
-    gapAnalysis: {
-      missingHardSkills: string[];
-      experienceGaps: string[];
-      theHarshTruth: string;
+    analyzerScore: {
+      score: number;
+      vibeMatch: string;
+      impactRating: string;
+      cultureFitSuggestions: string;
+      scoreJustification: string;
     };
-    actionPlan: string[];
-    overallMatchScore: number;
+    overallShortlistProbability: 'High' | 'Medium' | 'Low';
   };
   createdAt: Date;
 }

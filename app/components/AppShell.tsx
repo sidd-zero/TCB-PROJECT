@@ -5,9 +5,10 @@ import Sidebar from './Sidebar';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/login';
+  const isLandingPage = pathname === '/';
+  const isLoginPage = pathname === '/login' || pathname === '/signup';
 
-  if (isLoginPage) {
+  if (isLandingPage || isLoginPage) {
     return <main className="min-h-screen">{children}</main>;
   }
 
