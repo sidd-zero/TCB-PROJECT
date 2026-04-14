@@ -110,41 +110,29 @@ export default function ATSScannerPage() {
       <section className="page-hero">
         <div className="surface-card hero-card">
           <div>
-            <div className="eyebrow text-slate-400">
-              <SearchCode className="h-4 w-4" />
-              Machine Reading Protocol
-            </div>
-            <h1 className="page-title text-slate-900 mt-2">ATS Readiness Intelligence</h1>
-            <p className="page-subtitle text-slate-500 mt-4 leading-relaxed">
-              Verify your resume visibility against modern parsing logic. We check formatting 
-              compatibility, keyword density, and section hierarchy to ensure you aren't being 
-              auto-filtered by the machine before a human ever sees your application.
+
+            <h1 className="page-title text-[#113537] mt-2">ATS Visibility Score</h1>
+            <p className="page-subtitle text-[#37505c]/60 mt-4 leading-relaxed">
+              Verify how well your resume performs against modern tracking systems. 
+              We check your formatting match, keyword optimization, and structural clarity 
+              to ensure your application reaches the hiring manager.
             </p>
           </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-             <div className="px-4 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                <Cpu size={14} />
-                Parsing Logic V4.1
-             </div>
-             <div className="px-4 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                <FileText size={14} />
-                Section Validation
-             </div>
-          </div>
+
         </div>
 
         <div className="hero-grid">
            <div className="surface-panel p-6 flex flex-col justify-between overflow-hidden relative">
-              <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50/50 rounded-full blur-2xl" />
-              <SearchCode size={32} className="text-blue-500/20 mb-4" />
-              <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Keywords</div>
-              <div className="text-2xl font-black text-slate-800 tracking-tight">Density Mapping</div>
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#f76f8e]/10 rounded-full blur-2xl" />
+              <SearchCode size={32} className="text-[#f76f8e]/20 mb-4" />
+              <div className="text-sm font-bold text-[#37505c]/40 uppercase tracking-wider mb-1">Keywords</div>
+              <div className="text-2xl font-black text-[#113537] tracking-tight">Keyword Match</div>
            </div>
            <div className="surface-panel p-6 flex flex-col justify-between overflow-hidden relative">
-              <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-50/50 rounded-full blur-2xl" />
-              <XCircle size={32} className="text-rose-500/20 mb-4" />
-              <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Obstacles</div>
-              <div className="text-2xl font-black text-slate-800 tracking-tight">Format Checks</div>
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#96616b]/10 rounded-full blur-2xl" />
+              <CheckCircle2 size={32} className="text-[#96616b]/20 mb-4" />
+              <div className="text-sm font-bold text-[#37505c]/40 uppercase tracking-wider mb-1">Structure</div>
+              <div className="text-2xl font-black text-[#113537] tracking-tight">ATS Formatting</div>
            </div>
         </div>
       </section>
@@ -160,8 +148,8 @@ export default function ATSScannerPage() {
         <div className="span-5 surface-card section-card">
           <div className="section-header">
             <div>
-              <div className="eyebrow">Input A</div>
-              <div className="section-title mt-2">Machine-Read PDF</div>
+              <div className="eyebrow">Step 1</div>
+              <div className="section-title mt-2">Resume Document</div>
             </div>
             <div className="icon-tile tint-blue">
               <UploadCloud className="h-5 w-5" />
@@ -173,21 +161,21 @@ export default function ATSScannerPage() {
             whileTap={{ scale: 0.99 }}
             className="drop-zone block cursor-pointer group"
           >
-            <input type="file" accept="application/pdf" onChange={handleFileUpload} />
-            <div className="flex min-h-[16rem] flex-col items-center justify-center text-center p-8 transition-colors group-hover:bg-blue-50/10">
+            <input type="file" accept=".pdf,.docx,.doc" onChange={handleFileUpload} />
+            <div className="flex min-h-[16rem] flex-col items-center justify-center text-center p-8 transition-colors group-hover:bg-[#f76f8e]/5">
               <div className="w-16 h-16 bg-white rounded-3xl shadow-sm border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <UploadCloud className="h-7 w-7 text-blue-500" />
+                <UploadCloud className="h-7 w-7 text-[#f76f8e]" />
               </div>
-              <div className="text-lg font-bold text-slate-900">Push to Protocol</div>
+              <div className="text-lg font-bold text-slate-900">Upload Resume</div>
               <p className="mt-2 max-w-sm text-sm text-slate-500/80 leading-relaxed font-medium">
-                Upload your resume in PDF format to begin the formatting and keyword sync check.
+                Select your resume (PDF or Word) to analyze its ATS performance and keyword optimization.
               </p>
 
               <div className="mt-6">
                 {isUploading ? (
                   <div className="pill py-2.5 px-5 bg-slate-900 text-white border-0">
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Syncing Data...
+                    Analyzing Document...
                   </div>
                 ) : file ? (
                   <div className="pill py-2.5 px-5 bg-emerald-50 text-emerald-600 border-emerald-100 font-bold">
@@ -195,7 +183,7 @@ export default function ATSScannerPage() {
                     {file.name}
                   </div>
                 ) : (
-                  <div className="pill py-2.5 px-5 text-slate-400 border-slate-200">Waiting for payload</div>
+                  <div className="pill py-2.5 px-5 text-slate-400 border-slate-200">PDF or Word</div>
                 )}
               </div>
             </div>
@@ -205,10 +193,10 @@ export default function ATSScannerPage() {
         <div className={`span-7 surface-card section-card ${!resumeId ? 'opacity-40' : ''} transition-all`}>
           <div className="section-header">
             <div>
-              <div className="eyebrow">Input B</div>
-              <div className="section-title mt-2">Job Specification Context</div>
+              <div className="eyebrow">Step 2</div>
+              <div className="section-title mt-2">Role Description</div>
               <p className="section-copy">
-                Provide the full JD text so the ATS can perform keyword scoring.
+                Paste the requirements to identify missing skills and top-priority keywords.
               </p>
             </div>
             <div className="icon-tile tint-warm">
@@ -227,7 +215,7 @@ export default function ATSScannerPage() {
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
             <div className="text-xs font-bold text-slate-400 flex items-center gap-2">
                <div className={`w-2 h-2 rounded-full ${resumeId ? 'bg-emerald-500' : 'bg-slate-300'}`} />
-               {resumeId ? 'Protocol Ready' : 'Awaiting Resume Sync'}
+               {resumeId ? 'Ready to analyze' : 'Please upload your resume first'}
             </div>
             <motion.button
               whileHover={resumeId ? { x: 5 } : {}}
@@ -239,11 +227,11 @@ export default function ATSScannerPage() {
               {isAnalyzing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Running Protocol
+                  Analyzing...
                 </>
               ) : (
                 <>
-                  Run ATS Scan
+                  Analyze for ATS
                   <ChevronRight size={18} />
                 </>
               )}
@@ -263,35 +251,35 @@ export default function ATSScannerPage() {
           <div className="span-4 surface-panel p-8 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-6">
-                 <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Compatibility</div>
-                 <Cpu className="text-blue-500" size={20} />
+                 <div className="text-xs font-bold text-[#37505c]/40 uppercase tracking-widest">Compatibility</div>
+                 <Cpu className="text-[#f76f8e]" size={20} />
               </div>
-              <div className="text-7xl font-black text-slate-900 tracking-tighter mb-4">
+              <div className="text-7xl font-black text-[#113537] tracking-tighter mb-4">
                 {score}<span className="text-3xl text-slate-300">%</span>
               </div>
               <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                  <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${score}%` }}
-                    className="h-full bg-blue-500" 
+                    className="h-full bg-[#f76f8e]" 
                  />
               </div>
             </div>
             <div className="mt-8">
                <p className="text-sm font-medium text-slate-500 leading-relaxed italic">
-                 "This score represents how likely an automated system will rank your application in the 'Qualified' bucket."
+                 "This score indicates how effectively modern systems can interpret your background for this specific role."
                </p>
             </div>
           </div>
 
-          {/* Brutal Honesty Justification */}
-          <div className="span-8 surface-card p-8 border-rose-100/30 bg-rose-50/10">
+          {/* System Analysis Justification */}
+          <div className="span-8 surface-card p-8 border-[#f76f8e]/10 bg-[#f76f8e]/5">
             <div className="section-header">
               <div>
-                <div className="section-title text-rose-900">Machine Logic Breakdown</div>
-                <p className="section-copy text-rose-600/70 font-medium">Brutally honest parsing feedback.</p>
+                <div className="section-title text-slate-900">System Analysis</div>
+                <p className="section-copy text-slate-500 font-medium">Constructive feedback for better visibility.</p>
               </div>
-              <div className="icon-tile border-rose-100 bg-rose-100 text-rose-600">
+              <div className="icon-tile border-slate-100 bg-slate-50 text-slate-400">
                 <Target className="h-5 w-5" />
               </div>
             </div>
@@ -300,7 +288,7 @@ export default function ATSScannerPage() {
             </div>
             
             <div className={`mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-black uppercase tracking-widest ${probColor}`}>
-               Shortlist Prob: {probability}
+               Match Prob: {probability}
             </div>
           </div>
 

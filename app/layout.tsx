@@ -5,7 +5,7 @@ import AppShell from './components/AppShell';
 import { Snowfall, CursorEffect, ClickEffect } from './components/VisualEffects';
 
 export const metadata: Metadata = {
-  title: 'Resume AI | Resume Analyzer',
+  title: 'Career Studio',
   description: 'AI-powered resume analysis, cover letter drafting, and application tracking.',
 };
 

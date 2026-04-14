@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import dbConnect from '@/lib/mongodb';
 import Application from '@/models/Application';
+import User from '@/models/User';
 import { getSession } from '@/lib/auth';
 
 type DashboardApplication = {
@@ -47,14 +48,14 @@ const quickActions = [
   {
     href: '/cover-letter',
     title: 'Cover Letter',
-    copy: 'Generate a sharper first draft with the same role context and resume details.',
+    copy: 'Draft a clear and relevant cover letter based on your resume and the role.',
     icon: FileSignature,
     tint: 'tint-warm',
   },
   {
     href: '/applications',
     title: 'Track Applications',
-    copy: 'Keep dates, status changes, and the whole application pipeline in one view.',
+    copy: 'Keep your applications, status updates, and key dates organized in one place',
     icon: Briefcase,
     tint: 'tint-green',
   },
@@ -64,7 +65,18 @@ export default async function Dashboard() {
   const session = await getSession();
   const { applications, databaseOnline } = await getApplications();
 
-  const userName = session?.name || session?.email?.split('@')[0] || 'User';
+  let userName = session?.name || session?.email?.split('@')[0] || 'User';
+
+  if (databaseOnline && session?.email) {
+    try {
+      const userDoc = await User.findOne({ email: session.email }).lean();
+      if (userDoc && userDoc.name) {
+        userName = userDoc.name;
+      }
+    } catch (error) {
+      console.error('Failed to load user name:', error);
+    }
+  }
 
   const stats = [
     { label: 'Tracked roles', value: applications.length, tone: 'text-[color:var(--text)]' },
@@ -91,14 +103,10 @@ export default async function Dashboard() {
       <section className="page-hero">
         <div className="surface-card hero-card">
           <div>
-            <div className="eyebrow">
-              <Sparkles className="h-4 w-4" />
-              Intelligence Hub
-            </div>
+
             <h1 className="page-title">Welcome back, {userName}.</h1>
             <p className="page-subtitle max-w-2xl">
-              Your professional workspace is optimized and ready. Align your resume to new roles, 
-              track your pipeline, and generate AI-powered outreach all from one center.
+              Your workspace is ready. Improve your resume for new roles, track your applications, and manage your outreach - all in one place
             </p>
           </div>
 

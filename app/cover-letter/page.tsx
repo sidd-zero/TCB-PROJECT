@@ -96,14 +96,10 @@ export default function CoverLetterPage() {
       <section className="page-hero">
         <div className="surface-card hero-card">
           <div>
-            <div className="eyebrow">
-              <FileSignature className="h-4 w-4" />
-              Cover letter generator
-            </div>
-            <h1 className="page-title">Draft a tighter cover letter without the clutter.</h1>
+
+            <h1 className="page-title">Write a clear, focused cover letter.</h1>
             <p className="page-subtitle">
-              This view now separates role context, generation controls, and final output into calmer
-              panels so the text stays readable while you iterate.
+              Use your resume and job details to create a well-structured draft you can review and refine.
             </p>
           </div>
 
@@ -167,12 +163,12 @@ export default function CoverLetterPage() {
             </div>
 
             <label className="drop-zone block">
-              <input type="file" accept="application/pdf" onChange={handleFileUpload} />
+              <input type="file" accept=".pdf,.docx,.doc" onChange={handleFileUpload} />
               <div className="flex min-h-[12rem] flex-col items-center justify-center text-center">
                 <div className="icon-tile tint-blue h-14 w-14 rounded-[20px]">
                   <UploadCloud className="h-6 w-6" />
                 </div>
-                <div className="mt-4 text-base font-semibold">Upload resume PDF</div>
+                <div className="mt-4 text-base font-semibold">Upload resume PDF or Word</div>
                 <p className="mt-2 max-w-sm text-sm leading-6 text-[color:var(--muted)]">
                   The cover letter generator reuses the uploaded resume content as source context.
                 </p>
@@ -189,7 +185,7 @@ export default function CoverLetterPage() {
                       {file.name}
                     </div>
                   ) : (
-                    <div className="pill">PDF only</div>
+                    <div className="pill">PDF or Word</div>
                   )}
                 </div>
               </div>
@@ -217,7 +213,7 @@ export default function CoverLetterPage() {
             <button
               onClick={handleGenerate}
               disabled={!resumeId || !jobDescription.trim() || isGenerating}
-              className="btn-primary mt-4 w-full"
+              className="btn-primary mt-4 w-full bg-[#113537] hover:bg-[#f76f8e]"
             >
               {isGenerating ? (
                 <>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 /** 
  * SNOWFALL EFFECT 
@@ -9,8 +10,11 @@ import { motion, AnimatePresence } from 'framer-motion';
  */
 export const Snowfall = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname === '/') return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -96,6 +100,8 @@ export const Snowfall = () => {
       cancelAnimationFrame(animationId);
     };
   }, []);
+
+  if (pathname === '/') return null;
 
   return (
     <canvas

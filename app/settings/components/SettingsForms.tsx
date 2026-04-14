@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { accountSchema, securitySchema, privacySchema, type AccountValues, type SecurityValues, type PrivacyValues } from '@/lib/validations/settingsSchema';
 import { Camera, Download, Trash2, AlertTriangle, CheckCircle2, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 // --- Shared Components ---
 
@@ -36,7 +36,9 @@ import { updateProfile, changePassword, deleteAccount as deleteAccountAction } f
 
 export function AccountForm({ initialData }: { initialData?: AccountValues }) {
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<AccountValues>({
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<AccountValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: initialData || { 
       name: '', 
@@ -52,6 +54,16 @@ export function AccountForm({ initialData }: { initialData?: AccountValues }) {
       phoneNumber: ''
     },
   });
+
+  const avatarUrl = watch('avatarUrl');
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setValue('avatarUrl', url, { shouldValidate: true, shouldDirty: true });
+    }
+  };
 
   const onSubmit = async (data: AccountValues) => {
     setLoading(true);
@@ -73,11 +85,26 @@ export function AccountForm({ initialData }: { initialData?: AccountValues }) {
         <div className="flex items-center gap-6 mb-8 p-6 surface-panel rounded-[32px] border border-white/20">
           <div className="relative group">
             <div className="w-24 h-24 rounded-3xl bg-white shadow-xl border-2 border-white/50 overflow-hidden flex items-center justify-center">
-              <User className="text-slate-200 h-10 w-10" />
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User className="text-slate-200 h-10 w-10" />
+              )}
             </div>
-            <button type="button" className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-lg border border-slate-100 text-orange-600 hover:text-orange-700 transition-colors">
+            <button 
+              type="button" 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-lg border border-slate-100 text-[#f76f8e] hover:text-[#96616b] transition-colors"
+            >
               <Camera size={18} />
             </button>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*" 
+              onChange={handleImageUpload} 
+            />
           </div>
           <div>
             <h4 className="font-bold text-slate-800">Identity Image</h4>
@@ -85,7 +112,7 @@ export function AccountForm({ initialData }: { initialData?: AccountValues }) {
             <input 
               {...register('avatarUrl')} 
               placeholder="https://images..." 
-              className="mt-2 text-xs w-full bg-transparent border-b border-slate-200 py-1 focus:border-orange-500 outline-none" 
+              className="mt-2 text-xs w-full bg-transparent border-b border-slate-200 py-1 focus:border-[#f76f8e] outline-none" 
             />
             {errors.avatarUrl && <p className="text-[10px] text-rose-500 mt-1">{errors.avatarUrl.message}</p>}
           </div>

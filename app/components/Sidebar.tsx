@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Briefcase, FileSignature, FileText, LayoutDashboard, Sparkles, Settings, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import CSLogo from './CSLogo';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -35,15 +35,9 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-inner">
         <div className="sidebar-brand">
-          <motion.div 
-            whileHover={{ rotate: 15, scale: 1.1 }}
-            className="sidebar-brand-icon"
-          >
-            <Sparkles className="h-5 w-4" />
-          </motion.div>
+          <CSLogo className="h-10 w-10" />
           <div className="sidebar-brand-copy">
             <span className="sidebar-kicker">Career Studio</span>
-            <span className="sidebar-brand-text">Resume AI</span>
           </div>
         </div>
 
@@ -98,16 +92,6 @@ export default function Sidebar() {
             </span>
             <div className="text-left text-sm font-semibold">Sign Out</div>
           </motion.button>
-
-          <div className="sidebar-meta">
-            <div className="sidebar-meta-label">Workspace Focus</div>
-            <div className="mt-3 text-lg font-semibold tracking-[-0.03em]">
-              Minimal bento system for job search workflows
-            </div>
-            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-              Analysis, writing, and tracking now share one calmer visual system.
-            </p>
-          </div>
         </div>
       </div>
     </aside>

@@ -136,10 +136,9 @@ export default function ApplicationsPage() {
               <Briefcase className="h-4 w-4" />
               Application tracker
             </div>
-            <h1 className="page-title">Track the pipeline in a quieter, more usable layout.</h1>
+            <h1 className="page-title">Manage your applications and track their progress.</h1>
             <p className="page-subtitle">
-              The tracker now prioritizes readable status, clean spacing, and quick edits instead of
-              heavy visual effects. It should feel like a focused operations board.
+              Keep your applications organized, update statuses, and stay on top of your progress.
             </p>
           </div>
 

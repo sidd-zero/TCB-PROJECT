@@ -3,22 +3,22 @@
 :root {
   --font-sans: "Aptos", "Segoe UI Variable Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Consolas", "SFMono-Regular", "Cascadia Code", Menlo, monospace;
-  --bg: #f8fafc;
-  --bg-muted: #e2e8f0;
-  --surface: rgba(255, 255, 255, 0.92);
+  --bg: #ffead0;
+  --bg-muted: #37505c;
+  --surface: rgba(255, 255, 255, 0.94);
   --surface-strong: rgba(255, 255, 255, 0.98);
-  --surface-soft: rgba(255, 255, 255, 0.6);
-  --line: rgba(148, 163, 184, 0.15);
-  --line-strong: rgba(148, 163, 184, 0.25);
-  --text: #0f172a;
-  --muted: #64748b;
-  --muted-strong: #334155;
-  --accent: #c96d42;
-  --accent-soft: rgba(201, 109, 66, 0.1);
-  --accent-2: #0d9488;
-  --accent-2-soft: rgba(13, 148, 136, 0.1);
-  --accent-3: #2563eb;
-  --accent-3-soft: rgba(37, 99, 235, 0.1);
+  --surface-soft: rgba(255, 234, 208, 0.35);
+  --line: rgba(55, 80, 92, 0.12);
+  --line-strong: rgba(17, 53, 55, 0.15);
+  --text: #113537;
+  --muted: #37505c;
+  --muted-strong: #113537;
+  --accent: #f76f8e;
+  --accent-soft: rgba(247, 111, 142, 0.1);
+  --accent-2: #96616b;
+  --accent-2-soft: rgba(150, 97, 107, 0.1);
+  --accent-3: #37505c;
+  --accent-3-soft: rgba(55, 80, 92, 0.1);
   --danger: #e11d48;
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.03);
@@ -40,9 +40,9 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(201, 109, 66, 0.08), transparent 45%),
-    radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.08), transparent 45%),
-    #f8fafc;
+    radial-gradient(circle at top left, rgba(247, 111, 142, 0.05), transparent 45%),
+    radial-gradient(circle at bottom right, rgba(55, 80, 92, 0.05), transparent 45%),
+    #ffead0;
   color: var(--text);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -92,7 +92,7 @@ select {
   height: 24rem;
   top: -5rem;
   right: -6rem;
-  background: rgba(201, 109, 66, 0.18);
+  background: rgba(78, 141, 156, 0.15);
 }
 
 .app-bg::after {
@@ -100,7 +100,7 @@ select {
   height: 22rem;
   left: -4rem;
   bottom: 10%;
-  background: rgba(46, 122, 104, 0.16);
+  background: rgba(133, 199, 154, 0.12);
 }
 
 .app-grid {
@@ -142,11 +142,11 @@ select {
   width: 2.9rem;
   height: 2.9rem;
   border-radius: 1.1rem;
-  background: linear-gradient(135deg, #e7b08d 0%, #c96d42 100%);
+  background: linear-gradient(135deg, #f76f8e 0%, #96616b 100%);
   display: grid;
   place-items: center;
   color: white;
-  box-shadow: 0 12px 30px rgba(201, 109, 66, 0.28);
+  box-shadow: 0 12px 30px rgba(40, 28, 89, 0.2);
 }
 
 .sidebar-brand-copy {
@@ -193,8 +193,8 @@ select {
 }
 
 .nav-link.active {
-  background: #fffaf3;
-  border-color: rgba(201, 109, 66, 0.22);
+  background: #fbfcf4;
+  border-color: rgba(78, 141, 156, 0.22);
   color: var(--text);
   box-shadow: var(--shadow-md);
 }
@@ -544,14 +544,14 @@ select {
   border: 1.5px dashed rgba(73, 52, 33, 0.2);
   border-radius: 24px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 250, 244, 0.78));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(237, 247, 189, 0.4));
   padding: 1.4rem;
   transition: 180ms ease;
 }
 
 .drop-zone:hover {
-  border-color: rgba(201, 109, 66, 0.34);
-  background: rgba(255, 250, 244, 0.92);
+  border-color: rgba(78, 141, 156, 0.34);
+  background: rgba(237, 247, 189, 0.6);
 }
 
 .drop-zone input[type="file"] {

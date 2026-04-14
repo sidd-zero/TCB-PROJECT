@@ -175,10 +175,7 @@ export default function AnalyzerPage() {
       <section className="page-hero">
         <div className="surface-card hero-card">
           <div>
-            <div className="eyebrow">
-              <Target className="h-4 w-4" />
-              Resume analyzer
-            </div>
+
             <h1 className="page-title">Check how closely your resume fits the role.</h1>
             <p className="page-subtitle">
               Upload a PDF, paste the target job description, and get a match score with clear gaps
@@ -257,21 +254,21 @@ export default function AnalyzerPage() {
             whileTap={{ scale: 0.99 }}
             className="drop-zone block"
           >
-            <input type="file" accept="application/pdf" onChange={handleFileUpload} />
+            <input type="file" accept=".pdf,.docx,.doc" onChange={handleFileUpload} />
             <div className="flex min-h-[14rem] flex-col items-center justify-center text-center">
               <div className="icon-tile tint-blue h-14 w-14 rounded-[20px]">
                 <UploadCloud className="h-6 w-6" />
               </div>
-              <div className="mt-4 text-base font-semibold">Drop a PDF here or click to browse</div>
+              <div className="mt-4 text-base font-semibold">Upload your resume (PDF or Word)</div>
               <p className="mt-2 max-w-sm text-sm leading-6 text-[color:var(--muted)]">
-                The upload is parsed immediately so the analyzer can reuse the same resume context.
+                The analysis is performed immediately so you can identify gaps and improve your match score.
               </p>
 
               <div className="mt-5">
                 {isUploading ? (
                   <div className="pill">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading and parsing
+                    Analyzing document...
                   </div>
                 ) : file ? (
                   <div className="pill">
@@ -279,7 +276,7 @@ export default function AnalyzerPage() {
                     {file.name}
                   </div>
                 ) : (
-                  <div className="pill">PDF only</div>
+                  <div className="pill">PDF or Word</div>
                 )}
               </div>
             </div>
@@ -314,7 +311,7 @@ export default function AnalyzerPage() {
                 : 'Upload a resume first to unlock the analyzer.'}
             </div>
             <motion.button
-              whileHover={resumeId ? { scale: 1.04, boxShadow: "0 0 20px rgba(201, 109, 66, 0.2)" } : {}}
+              whileHover={resumeId ? { scale: 1.04, boxShadow: "0 0 20px rgba(247, 111, 142, 0.2)" } : {}}
               whileTap={resumeId ? { scale: 0.95 } : {}}
               onClick={handleAnalyze}
               disabled={!resumeId || !jobDescription.trim() || isAnalyzing}
@@ -342,8 +339,8 @@ export default function AnalyzerPage() {
           <div className="span-4 surface-panel section-card flex flex-col justify-between">
             <div className="section-header">
               <div>
-                <div className="section-title">Recruiter Strategy</div>
-                <p className="section-copy">Human-level assessment of your profile.</p>
+                <div className="section-title">Expert Analysis</div>
+                <p className="section-copy">Professional assessment of your profile fit.</p>
               </div>
               <div className="icon-tile tint-green">
                 <Target className="h-5 w-5" />
@@ -391,12 +388,12 @@ export default function AnalyzerPage() {
                 <motion.div 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="px-2 py-0.5 rounded bg-rose-100 text-rose-700 text-[10px] font-black uppercase tracking-widest mb-2 inline-block"
+                  className="px-2 py-0.5 rounded bg-[#f76f8e]/10 text-[#f76f8e] text-[10px] font-black uppercase tracking-widest mb-2 inline-block"
                 >
-                  Strict Protocol: Brutally Honest
+                  Expert Evaluation: Professional Tone
                 </motion.div>
-                <div className="section-title">The Strategic Justification</div>
-                <p className="section-copy">Why you are receiving this specific expert rating.</p>
+                <div className="section-title">Analysis Breakdown</div>
+                <p className="section-copy">A detailed justification for your match rating.</p>
               </div>
               <div className="icon-tile tint-warm">
                 <MessageSquare className="h-5 w-5" />
@@ -420,10 +417,10 @@ export default function AnalyzerPage() {
           <div className="span-12 surface-card section-card">
             <div className="section-header">
               <div>
-                <div className="section-title">Culture Fit & Optimization</div>
-                <p className="section-copy">Expert suggestions to pivot your language for this specific company culture.</p>
+                <div className="section-title">Career Strategy & Pivot Suggestions</div>
+                <p className="section-copy">Actionable steps to align your language with the company culture.</p>
               </div>
-              <div className="icon-tile tint-warm">
+              <div className="icon-tile tint-blue">
                 <Lightbulb className="h-5 w-5" />
               </div>
             </div>
@@ -495,7 +492,7 @@ export default function AnalyzerPage() {
                           className={`p-2 rounded-xl transition-all ${
                             isCopied 
                               ? 'bg-green-100 text-green-600' 
-                              : 'bg-slate-100 text-slate-400 hover:text-orange-600 hover:bg-orange-50'
+                              : 'bg-slate-100 text-slate-400 hover:text-[#f76f8e] hover:bg-[#f76f8e]/10'
                           }`}
                         >
                           {isCopied ? <Check size={16} /> : <Copy size={16} />}
