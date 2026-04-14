@@ -35,7 +35,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-inner">
         <div className="sidebar-brand">
-          <CSLogo className="h-10 w-10" />
+          <CSLogo className="sidebar-brand-icon" />
           <div className="sidebar-brand-copy">
             <span className="sidebar-kicker">Career Studio</span>
           </div>
@@ -50,6 +50,7 @@ export default function Sidebar() {
                 key={item.name}
                 whileHover={{ x: 5 }}
                 whileTap={{ scale: 0.96 }}
+                className="flex-shrink-0"
               >
                 <Link
                   href={item.href}
@@ -58,20 +59,20 @@ export default function Sidebar() {
                   <span className="nav-link-icon">
                     <item.icon className="h-[18px] w-[18px]" />
                   </span>
-                  <div>
+                  <div className="nav-link-text">
                     <div className="text-sm font-semibold">{item.name}</div>
                     <div className="text-xs text-[color:var(--muted)] line-clamp-1">
                       {item.href === '/dashboard'
-                        ? 'Overview and recent activity'
+                        ? 'Overview'
                         : item.href === '/ats-scanner'
-                          ? 'Check machine readability'
+                          ? 'Scanner'
                         : item.href === '/analyzer'
-                          ? 'Match resume to role'
-                          : item.href === '/cover-letter'
-                            ? 'Draft tailored outreach'
-                           : item.name === 'Settings'
-                              ? 'Manage your account'
-                              : 'Track the pipeline'}
+                          ? 'Analysis'
+                        : item.href === '/cover-letter'
+                          ? 'Outreach'
+                        : item.name === 'Settings'
+                          ? 'Account'
+                          : 'Tracker'}
                     </div>
                   </div>
                 </Link>
@@ -80,12 +81,12 @@ export default function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-auto space-y-4">
+        <div className="sidebar-footer">
           <motion.button
             whileHover={{ x: 5 }}
             whileTap={{ scale: 0.96 }}
             onClick={handleLogout}
-            className="nav-link w-full border-rose-100/20 hover:bg-rose-50/50 hover:text-rose-600 group"
+            className="nav-link w-full border-rose-100/20 hover:bg-rose-50/50 hover:text-rose-600 group mobile-hide"
           >
             <span className="nav-link-icon group-hover:bg-rose-100 group-hover:text-rose-600 transition-colors">
               <LogOut className="h-[18px] w-[18px]" />

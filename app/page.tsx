@@ -50,25 +50,25 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      <main className="pt-32 pb-20 px-6">
+      <main className="pt-24 md:pt-32 pb-20 px-4 md:px-6">
         {/* Hero Section */}
-        <section className="max-w-5xl mx-auto text-center mt-20 mb-32">
+        <section className="max-w-7xl mx-auto text-center mt-12 md:mt-20 mb-20 md:mb-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-6xl md:text-8xl font-black tracking-[-0.06em] text-slate-900 leading-[0.95] mb-8">
+            <h1 className="text-4xl md:text-7xl lg:text-8xl font-black tracking-[-0.05em] text-slate-900 leading-[0.98] mb-8">
               The studio for your<br />next professional move.
             </h1>
-            <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-              See where your resume stands, track your progress, and keep getting better with every application
+            <p className="text-base md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
+              See where your resume stands, track your progress, and keep getting better with every application.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/login" className="w-full sm:w-auto px-10 py-5 bg-[#f76f8e] text-white font-black uppercase tracking-widest text-xs rounded-3xl hover:bg-[#96616b] transition-all shadow-2xl shadow-[#f76f8e]/20">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 sm:px-0">
+              <Link href="/login" className="w-full sm:w-auto px-10 py-5 bg-[#f76f8e] text-white font-black uppercase tracking-widest text-[10px] md:text-xs rounded-3xl hover:bg-[#96616b] transition-all shadow-2xl shadow-[#f76f8e]/20">
                 Launch My Studio
               </Link>
-              <a href="#features" className="w-full sm:w-auto px-10 py-5 bg-white border border-slate-200 text-slate-600 font-black uppercase tracking-widest text-xs rounded-3xl hover:bg-slate-50 transition-all">
+              <a href="#features" className="w-full sm:w-auto px-10 py-5 bg-white border border-slate-200 text-slate-600 font-black uppercase tracking-widest text-[10px] md:text-xs rounded-3xl hover:bg-slate-50 transition-all">
                 Explore Features
               </a>
             </div>
@@ -77,14 +77,14 @@ export default function LandingPage() {
 
         {/* Feature Bento Grid */}
         <section id="features" className="max-w-7xl mx-auto mb-32">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-8 bg-white border border-slate-100 rounded-[48px] p-10 shadow-sm relative overflow-hidden group">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+            <div className="md:col-span-8 bg-white border border-slate-100 rounded-[32px] md:rounded-[48px] p-6 md:p-10 shadow-sm relative overflow-hidden group">
               <div className="relative z-10 max-w-md">
-                <div className="w-12 h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
                   <FileSearch size={22} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-3xl font-black tracking-tight mb-4">Intelligent Feedback</h3>
-                <p className="text-slate-500 font-medium leading-relaxed">
+                <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-slate-900">Intelligent Feedback</h3>
+                <p className="text-slate-500 font-medium leading-relaxed text-sm md:text-base">
                   Get deep insights into how your resume matches any job description.
                   We identify missing keywords and technical gaps so you can apply with confidence.
                 </p>
@@ -92,40 +92,40 @@ export default function LandingPage() {
               <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
             </div>
 
-            <div className="md:col-span-4 bg-[#37505c] text-white rounded-[48px] p-10 shadow-xl relative overflow-hidden group">
+            <div className="md:col-span-4 bg-[#37505c] text-white rounded-[32px] md:rounded-[48px] p-6 md:p-10 shadow-xl relative overflow-hidden group">
               <div className="relative z-10">
-                <div className="w-12 h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-6 border border-white/20">
                   <MessageSquareText size={22} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-3xl font-black tracking-tight mb-4">Smart Outreach</h3>
-                <p className="text-white/60 font-medium leading-relaxed">
+                <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4">Smart Outreach</h3>
+                <p className="text-white/60 font-medium leading-relaxed text-sm md:text-base">
                   Write clear, personalized messages suited to each company and role.
                 </p>
               </div>
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#f76f8e]/20 rounded-full blur-2xl" />
             </div>
 
-            <div className="md:col-span-4 bg-[#37505c]/5 border border-[#37505c]/10 rounded-[48px] p-10 shadow-sm group">
-              <div className="w-12 h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
+            <div className="md:col-span-4 bg-[#37505c]/5 border border-[#37505c]/10 rounded-[32px] md:rounded-[48px] p-6 md:p-10 shadow-sm group">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
                 <LayoutList size={22} strokeWidth={1.5} />
               </div>
-              <h3 className="text-3xl font-black tracking-tight mb-4 text-[#113537]">Visual Tracker</h3>
-              <p className="text-[#37505c]/60 font-medium leading-relaxed">
+              <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-[#113537]">Visual Tracker</h3>
+              <p className="text-[#37505c]/60 font-medium leading-relaxed text-sm md:text-base">
                 See where you've applied, what's pending, and what needs follow-up all without losing track.
               </p>
             </div>
 
-            <div className="md:col-span-8 bg-white border border-slate-100 rounded-[48px] p-10 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+            <div className="md:col-span-8 bg-white border border-slate-100 rounded-[32px] md:rounded-[48px] p-6 md:p-10 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div className="relative z-10">
-                <div className="w-12 h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
                   <UserCircle size={22} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-3xl font-black tracking-tight mb-4">Integrated Profile</h3>
-                <p className="text-slate-500 font-medium leading-relaxed max-w-lg">
+                <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-slate-900">Integrated Profile</h3>
+                <p className="text-slate-500 font-medium leading-relaxed max-w-lg text-sm md:text-base">
                   Keep your professional presence organized and easy to share.
                 </p>
               </div>
-              <div className="mt-12 flex gap-4">
+              <div className="mt-8 md:mt-12 flex gap-4">
                 <div className="h-2 w-20 bg-emerald-100/50 rounded-full" />
                 <div className="h-2 w-12 bg-emerald-50/50 rounded-full" />
                 <div className="h-2 w-24 bg-emerald-100/50 rounded-full" />
@@ -136,22 +136,22 @@ export default function LandingPage() {
         </section>
 
         {/* New Workflow Section to fill space */}
-        <section className="max-w-7xl mx-auto mb-32">
+        <section className="max-w-7xl mx-auto mb-32 px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black tracking-tight text-slate-900 mb-4">Three steps to your next role.</h2>
-            <p className="text-slate-500 font-medium max-w-xl mx-auto">A streamlined workflow designed for quality-focused candidates.</p>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-4">Three steps to your next role.</h2>
+            <p className="text-slate-500 font-medium max-w-xl mx-auto text-sm md:text-base">A streamlined workflow designed for quality-focused candidates.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
             {[
               { icon: BarChart, title: 'Analyze', copy: 'See how your skills match the job description.' },
               { icon: FileEdit, title: 'Optimize', copy: 'Improve your resume and write better applications.' },
               { icon: ClipboardCheck, title: 'Track', copy: 'Keep track of your applications and follow up on time.' }
             ].map((step, i) => (
               <div key={i} className="flex flex-col items-center">
-                <div className="w-20 h-20 bg-slate-50 border border-slate-200 rounded-[32px] shadow-sm flex items-center justify-center mb-8 text-slate-600">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-50 border border-slate-200 rounded-[24px] md:rounded-[32px] shadow-sm flex items-center justify-center mb-6 md:mb-8 text-slate-600">
                   <step.icon size={28} strokeWidth={1.5} />
                 </div>
-                <h4 className="text-xl font-black text-slate-900 mb-3">{step.title}</h4>
+                <h4 className="text-lg md:text-xl font-black text-slate-900 mb-3">{step.title}</h4>
                 <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-[200px]">{step.copy}</p>
               </div>
             ))}
