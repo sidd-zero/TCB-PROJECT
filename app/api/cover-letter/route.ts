@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import dbConnect from '@/lib/mongodb';
 import Resume from '@/models/Resume';
+import { generateWithFallback } from '@/lib/ai';
 
 type CoverLetterRequestBody = {
   resumeId?: string;
   jobDescription?: string;
 };
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
 
 export async function POST(req: Request) {
   try {
@@ -33,13 +33,6 @@ export async function POST(req: Request) {
       });
     }
 
-    let model;
-    try {
-      model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    } catch {
-      model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
-    }
-
     const prompt = `Write a professional and tailored cover letter based on the following job description and resume.
 Keep it concise, modern, and engaging. Avoid robotic language.
 
@@ -49,24 +42,19 @@ ${jobDescription}
 Resume:
 ${resume.text}`;
 
-    const result = await model.generateContent(prompt);
-    const coverLetter = result.response.text() || 'Could not generate cover letter.';
+    const coverLetter = await generateWithFallback(prompt);
 
     return NextResponse.json({ coverLetter });
   } catch (error: unknown) {
-    console.error('Cover Letter Gen Error:', error);
     const message = error instanceof Error ? error.message : 'Error generating cover letter';
-
-    if (message.includes('404') && message.includes('Not Found')) {
-      return NextResponse.json(
-        {
-          error:
-            'Gemini API not accessible. Check: 1) API key is valid 2) Generative Language API is enabled 3) You have quota available',
-        },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ error: message }, { status: 500 });
+    
+    return NextResponse.json(
+      { 
+        error: message,
+        details: 'If you see 404, ensure Gemini API is enabled in Google Cloud Console. If you see 503, the model is overloaded.',
+        recommendation: 'Try restarting your dev server or checking your API Key in .env.local.'
+      }, 
+      { status: 500 }
+    );
   }
 }

@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+import { generateWithFallback } from '@/lib/ai';
 
 type OutreachRequestBody = {
   vibe: string;
@@ -16,8 +14,6 @@ export async function POST(req: Request) {
     if (!vibe || !strength || !role) {
       return NextResponse.json({ error: 'Vibe, Strength, and Role are required' }, { status: 400 });
     }
-
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `### ROLE
 You are a high-stakes Networking Strategist and Copywriter. Your goal is to write a high-conversion LinkedIn DM (Connection Request or InMail) that is under 300 characters.
@@ -64,11 +60,10 @@ Generate three distinct LinkedIn messages based on the "Vibe Check" results. Eac
 - Ensure the message includes a clear, low-friction "Ask" (e.g., "Open to a chat?" or "Would love to learn more").
 - Return ONLY the JSON object. No other text.`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const aiResponse = await generateWithFallback(prompt);
 
     // Clean JSON response
-    const cleaned = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+    const cleaned = aiResponse.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
     const parsed = JSON.parse(cleaned);
 
     return NextResponse.json(parsed);

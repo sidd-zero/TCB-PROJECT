@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Resume from '@/models/Resume';
 import Analysis from '@/models/Analysis';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateWithFallback } from '@/lib/ai';
 
 type AnalyzeRequestBody = {
   resumeId?: string;
@@ -27,8 +27,7 @@ type DeepDiveAnalysisPayload = {
   overallShortlistProbability: 'High' | 'Medium' | 'Low';
 };
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Analysis logic configuration
 
 // Fallback logic
 function fallbackAnalysis(resumeText: string, jobDesc: string): DeepDiveAnalysisPayload {
@@ -113,13 +112,6 @@ export async function POST(req: Request) {
         throw new Error('Gemini API Key missing');
       }
 
-      let model;
-      try {
-        model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-      } catch {
-        model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-      }
-
       const prompt = `### ROLE
 You are a dual-mode AI System: 
 1. An ATS (Applicant Tracking System) Parser.
@@ -170,10 +162,8 @@ ${resumeText}
 - The 'scoreJustification' must be direct and 'brutally honest.'
 - No conversational filler, output ONLY the JSON.`;
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-
-      const cleaned = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+      const aiResponse = await generateWithFallback(prompt);
+      const cleaned = aiResponse.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
       const parsed = JSON.parse(cleaned);
       deepDiveAnalysis = sanitizeAndValidatePayload(parsed);
 
