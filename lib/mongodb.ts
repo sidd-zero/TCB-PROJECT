@@ -7,10 +7,6 @@ if (dns.setDefaultResultOrder) {
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
-
 const mongoUri = MONGODB_URI;
 
 type MongooseCache = {
@@ -29,6 +25,10 @@ if (!global.mongooseCache) {
 }
 
 async function dbConnect() {
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
