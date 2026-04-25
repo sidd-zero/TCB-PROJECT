@@ -35,7 +35,14 @@ export async function generateWithFallback(prompt: string) {
       const model = genAI.getGenerativeModel({ model: modelName });
       
       // Add a timeout to the request if possible (not directly supported in SDK easily, but we can wrap)
-      const result = await model.generateContent(prompt);
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.1,
+          topK: 1,
+          topP: 1,
+        }
+      });
       const text = result.response.text();
       
       if (text) {

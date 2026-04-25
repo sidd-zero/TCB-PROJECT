@@ -8,8 +8,7 @@ import CSLogo from './CSLogo';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'ATS Scanner', href: '/ats-scanner', icon: Sparkles },
-  { name: 'Analyzer', href: '/analyzer', icon: FileText },
+  { name: 'Deep Analysis', href: '/analyzer', icon: Sparkles },
   { name: 'Cover Letters', href: '/cover-letter', icon: FileSignature },
   { name: 'Tracker', href: '/applications', icon: Briefcase },
   { name: 'Settings', href: '/settings', icon: Settings },
@@ -64,10 +63,8 @@ export default function Sidebar() {
                     <div className="text-xs text-[color:var(--muted)] line-clamp-1">
                       {item.href === '/dashboard'
                         ? 'Overview'
-                        : item.href === '/ats-scanner'
-                          ? 'Scanner'
                         : item.href === '/analyzer'
-                          ? 'Analysis'
+                          ? 'ATS + Expert'
                         : item.href === '/cover-letter'
                           ? 'Outreach'
                         : item.name === 'Settings'

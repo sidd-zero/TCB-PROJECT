@@ -41,14 +41,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to extract text from the file' }, { status: 400 });
     }
 
-    // Save to database
-    const newResume = await Resume.create({
-      text: extractedText,
-    });
+    // Save to database (De-duplicate based on text content)
+    const updatedResume = await Resume.findOneAndUpdate(
+      { text: extractedText },
+      { text: extractedText },
+      { upsert: true, new: true }
+    );
 
     return NextResponse.json({
-      message: 'Resume uploaded and parsed successfully!',
-      resumeId: newResume._id,
+      message: 'Resume processed successfully!',
+      resumeId: updatedResume._id,
       textPreview: extractedText.substring(0, 500) + '...',
     });
   } catch (error: unknown) {

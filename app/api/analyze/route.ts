@@ -103,6 +103,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
     }
 
+    // --- CACHING LOGIC START ---
+    // Check if an analysis with the exact same resume and JD already exists
+    const existingAnalysis = await Analysis.findOne({
+      resumeId,
+      jobDescription: jobDescription.trim(),
+    }).sort({ createdAt: -1 }); // Get the latest one if multiple exist
+
+    if (existingAnalysis && existingAnalysis.report) {
+      console.log(`[Analysis Cache] Found existing analysis for resumeId: ${resumeId}`);
+      return NextResponse.json({
+        analysisId: existingAnalysis._id,
+        ...existingAnalysis.report,
+        matchScore: existingAnalysis.matchScore,
+        missingSkills: existingAnalysis.missingSkills,
+        suggestions: existingAnalysis.suggestions,
+        isCached: true
+      });
+    }
+    // --- CACHING LOGIC END ---
+
     const { text: resumeText } = resume;
 
     let deepDiveAnalysis: DeepDiveAnalysisPayload;
@@ -157,7 +177,18 @@ ${resumeText}
   "overallShortlistProbability": "High/Medium/Low"
 }
 
+### SCORING RUBRIC (BE MATHEMATICAL)
+1. ATS SCORE:
+   - Hard Skills Match (40%): Count missing keywords. -5 points per critical skill missing.
+   - Formatting & Headers (20%): Standard headers +5, complex tables -10.
+   - Relevance (40%): Match between job title/requirements and resume experience.
+2. ANALYZER SCORE:
+   - Impact (40%): Presence of numbers/metrics.
+   - Vibe (30%): Match with specified culture.
+   - Role Fit (30%): Years of experience vs requirement.
+
 ### CONSTRAINTS
+- SCORING STABILITY: You must be extremely consistent. For identical or near-identical inputs, you must provide identical scores.
 - Be precise. If a keyword is missing, list it.
 - The 'scoreJustification' must be direct and 'brutally honest.'
 - No conversational filler, output ONLY the JSON.`;
@@ -179,7 +210,7 @@ ${resumeText}
     // Save to DB
     const newAnalysis = await Analysis.create({
       resumeId,
-      jobDescription,
+      jobDescription: jobDescription.trim(),
       matchScore: overallMatchScore,
       missingSkills,
       suggestions,

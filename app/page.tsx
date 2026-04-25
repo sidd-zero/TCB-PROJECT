@@ -239,7 +239,7 @@ export default function LandingPage() {
             <h5 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">Product</h5>
             <ul className="space-y-4 text-sm font-bold text-slate-400">
               <li><Link href="/analyzer" className="hover:text-slate-950 transition-colors">Analyzer</Link></li>
-              <li><Link href="/ats-scanner" className="hover:text-slate-950 transition-colors">ATS Scanner</Link></li>
+              <li><Link href="/analyzer" className="hover:text-slate-950 transition-colors">Deep Analysis</Link></li>
               <li><Link href="/cover-letter" className="hover:text-slate-950 transition-colors">Outreach</Link></li>
             </ul>
           </div>
