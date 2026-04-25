@@ -34,7 +34,7 @@ async function dbConnect() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(mongoUri, {
+    cached.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
       family: 4,
       serverSelectionTimeoutMS: 10000,
