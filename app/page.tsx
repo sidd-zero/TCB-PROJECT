@@ -158,12 +158,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* New Why Choose Us Section */}
+        {/* Combined Why Choose Us & Brand Philosophy Section */}
         <section className="max-w-7xl mx-auto mb-32 px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-8">Built to help you apply smarter.</h2>
-              <p className="text-lg text-slate-500 font-medium leading-relaxed mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            {/* Why Choose Us */}
+            <div className="space-y-6">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">Built to help you apply smarter.</h2>
+              <p className="text-lg text-slate-500 font-medium leading-relaxed">
                 Stop guessing what works - track, improve, and apply with confidence.
               </p>
               <ul className="space-y-4">
@@ -180,24 +181,17 @@ export default function LandingPage() {
                 ))}
               </ul>
             </div>
-            <div className="bg-[#37505c]/10 rounded-[64px] aspect-square flex items-center justify-center p-12 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#f76f8e]/20 to-[#37505c]/10" />
-              <CSLogo className="h-32 w-32 relative z-10" />
-              <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[#f76f8e]/10 rounded-full blur-3xl" />
-            </div>
-          </div>
-        </section>
 
-        {/* Brand Philosophy / Project Intro */}
-        <section className="max-w-4xl mx-auto text-center mb-32 px-6">
-          <div className="p-12 md:p-20 rounded-[64px] bg-gradient-to-b from-white to-slate-50 border border-slate-100 shadow-sm">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-10 leading-tight italic">
-              "We built this for candidates who aim for both quality and consistency."
-            </h2>
-            <div className="w-20 h-1 bg-[#f76f8e] mx-auto mb-10 rounded-full" />
-            <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-2xl mx-auto">
-              Designed to simplify your job search and keep you organized at every step.
-            </p>
+            {/* Brand Philosophy */}
+            <div className="p-10 md:p-14 rounded-[48px] bg-gradient-to-b from-white to-slate-50/50 border border-slate-100/80 shadow-md text-center">
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-8 leading-tight italic">
+                "We built this for candidates who aim for both quality and consistency."
+              </h2>
+              <div className="w-20 h-1 bg-[#f76f8e] mx-auto mb-8 rounded-full" />
+              <p className="text-base text-slate-500 font-medium leading-relaxed max-w-lg mx-auto">
+                Designed to simplify your job search and keep you organized at every step.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -222,46 +216,6 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-
-      {/* Minimalist Footer */}
-      <footer className="max-w-7xl mx-auto px-6 pt-20 pb-10 border-t border-slate-100/50">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20 text-center md:text-left">
-          <div className="md:col-span-2">
-            <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
-              <CSLogo className="h-8 w-8 !shadow-none ring-1 ring-slate-100" />
-              <span className="text-lg font-black text-slate-900 tracking-tight">Career Studio</span>
-            </div>
-            <p className="text-slate-500 font-medium max-w-xs mx-auto md:mx-0">
-              A premium workspace designed for modern job seekers. Built with focus and precision.
-            </p>
-          </div>
-          <div>
-            <h5 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">Product</h5>
-            <ul className="space-y-4 text-sm font-bold text-slate-400">
-              <li><Link href="/analyzer" className="hover:text-slate-950 transition-colors">Analyzer</Link></li>
-              <li><Link href="/analyzer" className="hover:text-slate-950 transition-colors">Deep Analysis</Link></li>
-              <li><Link href="/cover-letter" className="hover:text-slate-950 transition-colors">Outreach</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">Support</h5>
-            <ul className="space-y-4 text-sm font-bold text-slate-400">
-              <li><a href="#" className="hover:text-slate-950 transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-slate-900 transition-colors">Terms</a></li>
-              <li><a href="#" className="hover:text-slate-900 transition-colors">Contact</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-t border-slate-100/50 pt-10">
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">
-            © 2026 Career Studio. Created with focus.
-          </p>
-          <div className="flex gap-6">
-            <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100" />
-            <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100" />
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

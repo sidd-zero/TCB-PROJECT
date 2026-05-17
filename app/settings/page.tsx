@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import SettingsSidebar from './components/SettingsSidebar';
-import { AccountForm, SecurityForm, PrivacyForm } from './components/SettingsForms';
+import { AccountForm, SecurityForm } from './components/SettingsForms';
 import ProfileReflection from './components/ProfileReflection';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'sonner';
 
-type Section = 'profile' | 'account' | 'security' | 'privacy';
+type Section = 'profile' | 'account' | 'security';
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<Section>('profile');
@@ -81,7 +81,6 @@ export default function SettingsPage() {
                 )}
                 {activeSection === 'account' && <AccountForm initialData={profileData} />}
                 {activeSection === 'security' && <SecurityForm />}
-                {activeSection === 'privacy' && <PrivacyForm />}
               </motion.div>
             </AnimatePresence>
           </div>

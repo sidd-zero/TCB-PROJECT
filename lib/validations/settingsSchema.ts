@@ -29,10 +29,5 @@ export const securitySchema = z.object({
   path: ['confirmPassword'],
 });
 
-export const privacySchema = z.object({
-  searchIndexing: z.boolean(),
-});
-
 export type AccountValues = z.infer<typeof accountSchema>;
 export type SecurityValues = z.infer<typeof securitySchema>;
-export type PrivacyValues = z.infer<typeof privacySchema>;

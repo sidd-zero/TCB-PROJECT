@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { accountSchema, securitySchema, privacySchema, type AccountValues, type SecurityValues, type PrivacyValues } from '@/lib/validations/settingsSchema';
+import { accountSchema, securitySchema, type AccountValues, type SecurityValues } from '@/lib/validations/settingsSchema';
 import { Camera, Download, Trash2, AlertTriangle, CheckCircle2, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
@@ -330,59 +330,4 @@ export function SecurityForm() {
   );
 }
 
-export function PrivacyForm() {
-  const { register, watch, setValue } = useForm<PrivacyValues>({
-    resolver: zodResolver(privacySchema),
-    defaultValues: { searchIndexing: false },
-  });
-  const searchIndexing = watch('searchIndexing');
 
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <FormHeader title="Data Privacy" description="Manage your data and visibility settings." />
-
-      <div className="space-y-8">
-        <div className="flex items-center justify-between p-6 surface-panel">
-          <div className="max-w-[80%]">
-            <h4 className="font-bold text-slate-900">Search Engine Indexing</h4>
-            <p className="text-sm text-slate-500 mt-1">
-              Allow search engines like Google to index your public profile and accomplishments.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setValue('searchIndexing', !searchIndexing)}
-            className={`w-14 h-8 rounded-full p-1 transition-colors duration-200 focus:outline-none ${
-              searchIndexing ? 'bg-orange-600' : 'bg-slate-200'
-            }`}
-          >
-            <motion.div
-              animate={{ x: searchIndexing ? 24 : 0 }}
-              className="w-6 h-6 bg-white rounded-full shadow-sm"
-            />
-          </button>
-        </div>
-
-        <div className="divider" />
-
-        <div className="space-y-4">
-          <h4 className="font-bold text-slate-900">Export Personal Data</h4>
-          <p className="text-sm text-slate-500">
-            Download a complete copy of your personal data, analyses, and application history in JSON format.
-          </p>
-          <motion.button
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              alert('Export started! Your download will be ready in a few minutes.');
-            }}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <Download size={18} />
-            Download My Data
-          </motion.button>
-        </div>
-      </div>
-    </motion.div>
-  );
-}

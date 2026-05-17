@@ -3,7 +3,7 @@
 import { User, Shield, Lock, Trash2, Globe, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Section = 'profile' | 'account' | 'security' | 'privacy';
+type Section = 'profile' | 'account' | 'security';
 
 interface SettingsSidebarProps {
   activeSection: Section;
@@ -14,7 +14,6 @@ const sections = [
   { id: 'profile', name: 'Profile Reflection', icon: User },
   { id: 'account', name: 'Account Details', icon: Globe },
   { id: 'security', name: 'Security & Auth', icon: Shield },
-  { id: 'privacy', name: 'Data Privacy', icon: Download },
 ] as const;
 
 export default function SettingsSidebar({ activeSection, setActiveSection }: SettingsSidebarProps) {
