@@ -37,7 +37,7 @@ export default function LoginPage() {
       } else {
         if (res.status === 500) {
           setError(
-            'Database Connection Error: Please verify that you have added the MONGODB_URI environment variable to your deployment provider (e.g. Vercel dashboard) and that your MongoDB Atlas IP Whitelist (IP Access List) allows connections from all IPs (0.0.0.0/0).'
+            `Database Connection Error (${data.error || data.message || 'Unknown database issue'}): Please verify that you have added the MONGODB_URI environment variable to your environment variables and that your MongoDB Atlas IP Whitelist (IP Access List) allows connections.`
           );
         } else {
           setError(data.message || (isSignUp ? 'Registration failed.' : 'Invalid email or password.'));

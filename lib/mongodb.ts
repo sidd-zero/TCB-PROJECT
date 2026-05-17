@@ -5,10 +5,6 @@ if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-const mongoUri = MONGODB_URI;
-
 type MongooseCache = {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
@@ -25,7 +21,9 @@ if (!global.mongooseCache) {
 }
 
 async function dbConnect() {
-  if (!MONGODB_URI) {
+  const uri = process.env.MONGODB_URI;
+  
+  if (!uri) {
     throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
   }
 
@@ -34,7 +32,7 @@ async function dbConnect() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
       family: 4,
       serverSelectionTimeoutMS: 10000,
@@ -54,3 +52,4 @@ async function dbConnect() {
 }
 
 export default dbConnect;
+
